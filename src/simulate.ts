@@ -19,9 +19,15 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       points: 0,
       fga: 0,
       fgm: 0,
+      threepa: 0,
+      threepm: 0,
       min: 0,
       attr: {
-        twoPercentage: player.twoPercentage
+        scoring: player.scoring,
+        twoTendency: player.twoTendency,
+        twoPercentage: player.twoPercentage,
+        threeTendency: player.threeTendency,
+        threePercentage: player.threePercentage,
       }
     }
   })
@@ -32,9 +38,15 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       points: 0,
       fga: 0,
       fgm: 0,
+      threepa: 0,
+      threepm: 0,
       min: 0,
       attr: {
-        twoPercentage: player.twoPercentage
+        scoring: player.scoring,
+        twoTendency: player.twoTendency,
+        twoPercentage: player.twoPercentage,
+        threeTendency: player.threeTendency,
+        threePercentage: player.threePercentage,
       }
     }
   })
@@ -51,6 +63,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       points: 0,
       fga: 0,
       fgm: 0,
+      threepa: 0,
+      threepm: 0,
       players: homePlayersStats
     }, {
       teamId: awayTeam.teamId,
@@ -59,12 +73,14 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       points: 0,
       fga: 0,
       fgm: 0,
+      threepa: 0,
+      threepm: 0,
       players: awayPlayersStats
     }]
   }
 
   let substitutionTimes = [{time: [getRandomNumberInRange(450, 510)], numSubs: 0}, {time: [getRandomNumberInRange(450, 510)], numSubs: 0}];
-  //let substitutionTimes = [[getRandomNumberInRange(450, 510)], [getRandomNumberInRange(450, 510)]]
+
   for (let i = 0; i < substitutionTimes.length; i++) {
     for (let j = 1; j < 20; j++) {
       let minValue: number;
@@ -109,18 +125,39 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     increaseMinutes(playersOnCourt[offense], shotClock);
     increaseMinutes(playersOnCourt[defense], shotClock);
 
-    const playerToShoot = playersOnCourt[offense][getRandomNumber(playersOnCourt[offense].length)];
-    if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage) {
-      gameResult.teams[offense].points += 2;
-      gameResult.teams[offense].fga++;
-      gameResult.teams[offense].fgm++;
-      playerToShoot.points += 2;
-      playerToShoot.fga++;
-      playerToShoot.fgm++;
+    const playerToShoot = whoShoots(playersOnCourt[offense]);
+    if (getRandomNumber(1000) <= playerToShoot!.attr.twoTendency) {
+      if (getRandomNumber(1000) <= playerToShoot!.attr.twoPercentage) {
+        gameResult.teams[offense].points += 2;
+        gameResult.teams[offense].fga++;
+        gameResult.teams[offense].fgm++;
+        playerToShoot!.points += 2;
+        playerToShoot!.fga++;
+        playerToShoot!.fgm++;
+      } else {
+        gameResult.teams[offense].fga++;
+        playerToShoot!.fga++;
+      }
     } else {
-      gameResult.teams[offense].fga++;
-      playerToShoot.fga++;
+      if (getRandomNumber(1000) <= playerToShoot!.attr.threePercentage) {
+        gameResult.teams[offense].points += 3;
+        gameResult.teams[offense].fga++;
+        gameResult.teams[offense].fgm++;
+        gameResult.teams[offense].threepa++;
+        gameResult.teams[offense].threepm++;
+        playerToShoot!.points += 3;
+        playerToShoot!.fga++;
+        playerToShoot!.fgm++;
+        playerToShoot!.threepa++;
+        playerToShoot!.threepm++;
+      } else {
+        gameResult.teams[offense].fga++;
+        gameResult.teams[offense].threepa++;
+        playerToShoot!.fga++;
+        playerToShoot!.threepa++
+      }
     }
+    
 
     const temp = offense;
     offense = defense;
@@ -147,6 +184,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       player.stats.fgm += playerToAddStatsFrom!.fgm;
       player.stats.min += playerToAddStatsFrom!.min;
       player.stats.points += playerToAddStatsFrom!.points;
+      player.stats.threepa += playerToAddStatsFrom!.threepa;
+      player.stats.threepm += playerToAddStatsFrom!.threepm;
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -199,6 +238,27 @@ function substitutePlayers(
     playersOnCourt.reverse();
     playersOnBench.reverse();
   }
+}
+
+function whoShoots(playersOnCourt: PlayerGameStats[]) {
+  let totalScoring = 0;
+
+  for (let i = 0; i < playersOnCourt.length; i++) {
+    totalScoring += playersOnCourt[i].attr.scoring;
+  }
+
+  const rng = getRandomNumber(totalScoring);
+
+  let min = 0;
+  let max = 0;
+  for (let i = 0; i < playersOnCourt.length; i++) {
+    min = max;
+    max = playersOnCourt[i].attr.scoring + min;
+    if (rng < max && rng >= min) {
+      return playersOnCourt[i];
+    }
+  }
+  console.log("Oopsie!");
 }
 
 export default simulate;

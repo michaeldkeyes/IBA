@@ -8,10 +8,17 @@ export type Game = {
 
 export type Player = {
   playerId?: number;
+  overall: number;
   teamId: number;
   first: string;
   last: string;
+  scoring: number;
+  twoTendency: number;
+  threeTendency: number;
   twoPercentage: number;
+  threePercentage: number;
+  freeTendency: number;
+  freePercentage: number;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
 };
@@ -27,6 +34,8 @@ export type StatBase = {
   points: number;
   fga: number;
   fgm: number;
+  threepa: number;
+  threepm: number;
 };
 
 export type PlayerStats = {
@@ -47,6 +56,8 @@ export type TeamStats = {
   points: number;
   fga: number;
   fgm: number;
+  threepa: number;
+  threepm: number;
   wins: number;
   losses: number;
   players?: PlayerGameStats[];
@@ -58,8 +69,19 @@ export type PlayerGameStats = {
   points: number;
   fga: number;
   fgm: number;
+  threepa: number;
+  threepm: number;
   min: number;
   attr: {
+    scoring: number;
+    twoTendency: number;
     twoPercentage: number;
+    threeTendency: number;
+    threePercentage: number;
   };
+};
+
+export type Meta = {
+  day: number;
+  season: number;
 };

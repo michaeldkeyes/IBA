@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { Game, Player, Schedule, Team, TeamStats } from "../types";
+import { Game, Meta, Player, Schedule, Team, TeamStats } from "../types";
 
 export const useLeagueStore = defineStore({
   id: "league",
@@ -9,9 +9,47 @@ export const useLeagueStore = defineStore({
     teams: [] as Team[],
     teamStats: [] as TeamStats[],
     games: [] as Game[],
-    meta: {},
+    meta: {} as Meta,
+    isReady: false,
   }),
-  getters: {},
+  getters: {
+    westernConference() {
+      return this.teamStats
+        .filter((team) => team.teamId! < 16)
+        .sort((a, b) => {
+          return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
+            ? -1
+            : 1;
+        });
+    },
+    easternConference() {
+      return this.teamStats
+        .filter((team) => team.teamId! > 15)
+        .sort((a, b) => {
+          return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
+            ? -1
+            : 1;
+        });
+    },
+    leadingScorer() {
+      return this.players
+        .filter((player) => player.stats.gamesPlayed! > 0)
+        .sort((a, b) => {
+          return a.stats.points / a.stats.gamesPlayed! >=
+            b.stats.points / b.stats.gamesPlayed!
+            ? -1
+            : 1;
+        })
+        .slice(0, 1);
+    },
+    leadingThreePoints() {
+      return this.players
+        .sort((a, b) => {
+          return a.stats.threepm >= b.stats.threepm ? -1 : 1;
+        })
+        .slice(0, 1);
+    },
+  },
   actions: {
     setPlayers(players: Player[]) {
       this.players = players;
@@ -34,6 +72,15 @@ export const useLeagueStore = defineStore({
         day,
         season,
       };
+    },
+    increaseDay() {
+      this.meta.day++;
+    },
+    increaseSeason() {
+      this.meta.season++;
+    },
+    toggleIsReady() {
+      this.isReady = !this.isReady;
     },
   },
 });

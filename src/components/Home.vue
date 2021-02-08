@@ -5,10 +5,10 @@
   <button @click="simGames(30)">Simulate Month</button>
   <h1>{{ store.meta.season }} Season</h1>
   <h2>Day {{ store.meta.day }}</h2>
-  <div class="d-flex">
+  <div class="d-flex" v-if="store.isReady">
     <div>
       <h1>Western Conference</h1>
-      <li v-for="team in westernConference" :key="team.teamId">
+      <li v-for="team in store.westernConference" :key="team.teamId">
         <router-link :to="{ name: 'Roster', params: { teamId: team.teamId } }">
           {{ store.teams.find((team2) => team.teamId === team2.teamId).city }}
           {{ store.teams.find((team2) => team.teamId === team2.teamId).name }}
@@ -16,9 +16,32 @@
         <span> {{ team.wins }} - {{ team.losses }} </span>
       </li>
     </div>
+    <div v-if="store.leadingScorer !== undefined">
+      <h4>Leading Scorers</h4>
+      <div v-for="player in store.leadingScorer" :key="player.playerId">
+        <h5>
+          {{ store.teams.find((team) => team.teamId === player.teamId).city }}
+          {{ player.first + " " + player.last }}
+          {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
+        </h5>
+      </div>
+    </div>
+    <div v-if="store.leadingThreePoints !== undefined">
+      <h4>Leading Three Point Shooter</h4>
+      <div v-for="player in store.leadingThreePoints" :key="player.playerId">
+        <h5>
+          {{ store.teams.find((team) => team.teamId === player.teamId).city }}
+          {{ player.first + " " + player.last }}
+          {{ player.stats.threepm }}
+          {{
+            ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1)
+          }}%
+        </h5>
+      </div>
+    </div>
     <div>
       <h1>Eastern Conference</h1>
-      <li v-for="team in easternConference" :key="team.teamId">
+      <li v-for="team in store.easternConference" :key="team.teamId">
         <router-link :to="{ name: 'Roster', params: { teamId: team.teamId } }">
           {{ store.teams.find((team2) => team.teamId === team2.teamId).city }}
           {{ store.teams.find((team2) => team.teamId === team2.teamId).name }}
@@ -45,20 +68,6 @@ import simulate from "../simulate";
 export default defineComponent({
   setup() {
     const store = useLeagueStore();
-    const westernConference = store.teamStats
-      .filter((team) => team.teamId! < 16)
-      .sort((a, b) => {
-        return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
-          ? -1
-          : 1;
-      });
-    const easternConference = store.teamStats
-      .filter((team) => team.teamId! > 15)
-      .sort((a, b) => {
-        return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
-          ? -1
-          : 1;
-      });
 
     const createDb = async () => {
       try {
@@ -76,6 +85,7 @@ export default defineComponent({
           .toArray()
           .then((meta) => store.setMeta(meta[0].day, meta[0].season));
         store.setTeams(teams);
+        store.toggleIsReady();
         console.log("Done!");
       } catch (error) {
         console.error(error);
@@ -84,9 +94,8 @@ export default defineComponent({
 
     const simGames = async (numDays: number) => {
       while (numDays > 0) {
-        const dayToSim = await db.meta.toArray();
         const gamesToSim = store.schedule.filter(
-          (game) => game.day === dayToSim![0].day
+          (game) => game.day === store.meta.day
         );
         const keysToDelete: number[] = gamesToSim.map((game) => {
           return game.gameId!;
@@ -100,13 +109,13 @@ export default defineComponent({
           const homePlayers = store.players
             .filter((player) => player.teamId === game.homeTeamId)
             .sort(function (a, b) {
-              return a.twoPercentage > b.twoPercentage ? -1 : 1;
+              return a.overall > b.overall ? -1 : 1;
             });
           const homeTeam = store.teamStats[game.homeTeamId];
           const awayPlayers = store.players
             .filter((player) => player.teamId === game.awayTeamId)
             .sort(function (a, b) {
-              return a.twoPercentage > b.twoPercentage ? -1 : 1;
+              return a.overall > b.overall ? -1 : 1;
             });
           const awayTeam = store.teamStats[game.awayTeamId];
 
@@ -124,12 +133,12 @@ export default defineComponent({
         });
         try {
           console.log("Saving game results to database...");
-          dayToSim[0].day++;
+          store.increaseDay();
           await db.games.bulkAdd(gameResults, gameKeys);
           await db.players.bulkPut(JSON.parse(JSON.stringify(players)));
           await db.teamStats.bulkPut(JSON.parse(JSON.stringify(teams)));
           await db.schedule.bulkDelete(keysToDelete);
-          await db.meta.put(dayToSim[0]);
+          await db.meta.update(1, { day: store.meta.day });
           await db.players
             .toArray()
             .then((players) => store.setPlayers(players));
@@ -138,9 +147,6 @@ export default defineComponent({
             .then((teams) => store.setTeamStats(teams));
           // prettier-ignore
           await db.games.toArray().then((games) => store.setGames(games));
-          await db.meta
-            .toArray()
-            .then((meta) => store.setMeta(meta[0].day, meta[0].season));
           console.log("Saved!");
           numDays--;
         } catch (error) {
@@ -153,8 +159,8 @@ export default defineComponent({
       store,
       createDb,
       simGames,
-      westernConference,
-      easternConference,
+      // westernConference: computed(() => store.westernConference),
+      // easternConference: computed(() => store.easternConference),
     };
   },
 });

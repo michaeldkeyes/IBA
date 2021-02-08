@@ -11,7 +11,10 @@
     >
       <li>{{ player.first }} {{ player.last }}</li>
     </router-link>
-    <span> ovr: {{ Math.round((player.twoPercentage * 2) / 10) }} </span>
+    <span>
+      ovr:
+      {{ player.overall }}
+    </span>
     <span>
       ppg: {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
     </span>
@@ -20,6 +23,10 @@
     </span>
     <span>
       min: {{ (player.stats.min / 60 / player.stats.gamesPlayed).toFixed(1) }}
+    </span>
+    <span
+      >3p%:
+      {{ ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1) }}%
     </span>
   </li>
 </template>
@@ -37,7 +44,7 @@ export default defineComponent({
     );
 
     const sortedPlayers = players.sort(function (a, b) {
-      return a.twoPercentage > b.twoPercentage ? -1 : 1;
+      return a.overall > b.overall ? -1 : 1;
     });
 
     return {

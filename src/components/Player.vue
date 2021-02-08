@@ -3,7 +3,12 @@
     {{ store.teams[player.teamId].city }} {{ store.teams[player.teamId].name }}
   </router-link>
   <h1>{{ player.first }} {{ player.last }}</h1>
-  <h3>Shooting: {{ player.twoPercentage }}</h3>
+  <h4>Scoring: {{ player.scoring }}</h4>
+  <h4>Two Point Shooting: {{ player.twoPercentage }}</h4>
+  <h4>Two Tendency: {{ player.twoTendency }}</h4>
+  <h4>Three Point Shooting: {{ player.threePercentage }}</h4>
+  <h4>Three Tendency: {{ player.threeTendency }}</h4>
+  <h4>Free Throw Shooting: {{ player.freePercentage }}</h4>
 </template>
 
 <script lang="ts">
