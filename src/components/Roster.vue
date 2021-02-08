@@ -25,8 +25,12 @@
       min: {{ (player.stats.min / 60 / player.stats.gamesPlayed).toFixed(1) }}
     </span>
     <span
-      >3p%:
+      >3p: {{ player.stats.threepm }}/{{ player.stats.threepa }}
       {{ ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1) }}%
+    </span>
+    <span
+      >ft: {{ player.stats.ftm }}/{{ player.stats.fta }}
+      {{ ((player.stats.ftm / player.stats.fta) * 100).toFixed(1) }}%
     </span>
   </li>
 </template>

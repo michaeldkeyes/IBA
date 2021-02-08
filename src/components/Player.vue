@@ -9,6 +9,7 @@
   <h4>Three Point Shooting: {{ player.threePercentage }}</h4>
   <h4>Three Tendency: {{ player.threeTendency }}</h4>
   <h4>Free Throw Shooting: {{ player.freePercentage }}</h4>
+  <h4>Free Throw Tendency: {{ player.freeTendency }}</h4>
 </template>
 
 <script lang="ts">

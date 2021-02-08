@@ -36,6 +36,8 @@ export type StatBase = {
   fgm: number;
   threepa: number;
   threepm: number;
+  fta: number;
+  ftm: number;
 };
 
 export type PlayerStats = {
@@ -58,6 +60,8 @@ export type TeamStats = {
   fgm: number;
   threepa: number;
   threepm: number;
+  fta: number;
+  ftm: number;
   wins: number;
   losses: number;
   players?: PlayerGameStats[];
@@ -71,6 +75,8 @@ export type PlayerGameStats = {
   fgm: number;
   threepa: number;
   threepm: number;
+  fta: number;
+  ftm: number;
   min: number;
   attr: {
     scoring: number;
@@ -78,6 +84,8 @@ export type PlayerGameStats = {
     twoPercentage: number;
     threeTendency: number;
     threePercentage: number;
+    freeTendency: number;
+    freePercentage: number;
   };
 };
 

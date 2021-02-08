@@ -48,6 +48,8 @@ function generatePlayers(): Player[] {
           fgm: 0,
           threepa: 0,
           threepm: 0,
+          fta: 0,
+          ftm: 0,
           min: 0,
         },
       };

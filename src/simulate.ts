@@ -21,6 +21,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       fgm: 0,
       threepa: 0,
       threepm: 0,
+      fta: 0,
+      ftm: 0,
       min: 0,
       attr: {
         scoring: player.scoring,
@@ -28,6 +30,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         twoPercentage: player.twoPercentage,
         threeTendency: player.threeTendency,
         threePercentage: player.threePercentage,
+        freeTendency: player.freeTendency,
+        freePercentage: player.freePercentage,
       }
     }
   })
@@ -40,6 +44,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       fgm: 0,
       threepa: 0,
       threepm: 0,
+      fta: 0,
+      ftm: 0,
       min: 0,
       attr: {
         scoring: player.scoring,
@@ -47,6 +53,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         twoPercentage: player.twoPercentage,
         threeTendency: player.threeTendency,
         threePercentage: player.threePercentage,
+        freeTendency: player.freeTendency,
+        freePercentage: player.freePercentage,
       }
     }
   })
@@ -65,6 +73,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       fgm: 0,
       threepa: 0,
       threepm: 0,
+      fta: 0,
+      ftm: 0,
       players: homePlayersStats
     }, {
       teamId: awayTeam.teamId,
@@ -75,6 +85,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       fgm: 0,
       threepa: 0,
       threepm: 0,
+      fta: 0,
+      ftm: 0,
       players: awayPlayersStats
     }]
   }
@@ -126,6 +138,11 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     increaseMinutes(playersOnCourt[defense], shotClock);
 
     const playerToShoot = whoShoots(playersOnCourt[offense]);
+    let fouled = false;
+    if (getRandomNumber(1000) <= playerToShoot!.attr.freeTendency) {
+      fouled = true;
+    }
+
     if (getRandomNumber(1000) <= playerToShoot!.attr.twoTendency) {
       if (getRandomNumber(1000) <= playerToShoot!.attr.twoPercentage) {
         gameResult.teams[offense].points += 2;
@@ -134,9 +151,14 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         playerToShoot!.points += 2;
         playerToShoot!.fga++;
         playerToShoot!.fgm++;
+        if (fouled) shootFreeThrows(playerToShoot!, 1, gameResult.teams[offense]);
       } else {
-        gameResult.teams[offense].fga++;
-        playerToShoot!.fga++;
+        if (fouled) {
+          shootFreeThrows(playerToShoot!, 2, gameResult.teams[offense]);
+        } else {
+          gameResult.teams[offense].fga++;
+          playerToShoot!.fga++;
+        }
       }
     } else {
       if (getRandomNumber(1000) <= playerToShoot!.attr.threePercentage) {
@@ -186,6 +208,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       player.stats.points += playerToAddStatsFrom!.points;
       player.stats.threepa += playerToAddStatsFrom!.threepa;
       player.stats.threepm += playerToAddStatsFrom!.threepm;
+      player.stats.fta += playerToAddStatsFrom!.fta;
+      player.stats.ftm += playerToAddStatsFrom!.ftm;
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -198,6 +222,10 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     teams[i].fga += gameResult.teams[i].fga;
     teams[i].fgm += gameResult.teams[i].fgm;
     teams[i].points += gameResult.teams[i].points;
+    teams[i].threepa += gameResult.teams[i].threepa;
+    teams[i].threepm += gameResult.teams[i].threepm;
+    teams[i].fta += gameResult.teams[i].fta;
+    teams[i].ftm += gameResult.teams[i].ftm;
     if (i === winner) {
       teams[i].wins++;
       gameResult.winner = {
@@ -259,6 +287,27 @@ function whoShoots(playersOnCourt: PlayerGameStats[]) {
     }
   }
   console.log("Oopsie!");
+}
+
+function shootFreeThrows(
+  playerToShoot: PlayerGameStats,
+  num: number,
+  team: TeamStats
+) {
+  while (num > 0) {
+    if (getRandomNumber(1000) < playerToShoot.attr.freePercentage) {
+      team.points++;
+      team.fta++;
+      team.ftm++;
+      playerToShoot.points++;
+      playerToShoot.fta++;
+      playerToShoot.ftm++;
+    } else {
+      team.fta++;
+      playerToShoot.fta++;
+    }
+    num--;
+  }
 }
 
 export default simulate;
