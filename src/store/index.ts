@@ -17,30 +17,25 @@ export const useLeagueStore = defineStore({
       return this.teamStats
         .filter((team) => team.teamId! < 16)
         .sort((a, b) => {
-          return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
-            ? -1
-            : 1;
+          return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses) ? -1 : 1;
         });
     },
     easternConference() {
       return this.teamStats
         .filter((team) => team.teamId! > 15)
         .sort((a, b) => {
-          return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
-            ? -1
-            : 1;
+          return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses) ? -1 : 1;
         });
     },
-    leadingScorer() {
+    leadingScorers() {
       return this.players
         .filter((player) => player.stats.gamesPlayed! > 0)
         .sort((a, b) => {
-          return a.stats.points / a.stats.gamesPlayed! >=
-            b.stats.points / b.stats.gamesPlayed!
+          return a.stats.points / a.stats.gamesPlayed! >= b.stats.points / b.stats.gamesPlayed!
             ? -1
             : 1;
         })
-        .slice(0, 1);
+        .slice(0, 3);
     },
     leadingThreePoints() {
       return this.players
@@ -48,6 +43,14 @@ export const useLeagueStore = defineStore({
           return a.stats.threepm >= b.stats.threepm ? -1 : 1;
         })
         .slice(0, 1);
+    },
+    leadingRebounders() {
+      return this.players
+        .filter((player) => player.stats.gamesPlayed! > 0)
+        .sort((a, b) => {
+          return a.stats.trb / a.stats.gamesPlayed! >= b.stats.trb / b.stats.gamesPlayed! ? -1 : 1;
+        })
+        .slice(0, 3);
     },
   },
   actions: {

@@ -8,7 +8,10 @@
       </h4>
     </div>
     <div>
-      <h4 v-for="game in gamesPlayed">
+      <router-link
+        :to="{ name: 'Game', params: { gameId: game.gameId } }"
+        v-for="game in gamesPlayed"
+      >
         {{
           game.teams[0].teamId === game.winner.teamId
             ? game.winner.points
@@ -20,7 +23,7 @@
             ? game.winner.points
             : game.loser.points
         }}
-      </h4>
+      </router-link>
     </div>
   </div>
 </template>
@@ -57,5 +60,9 @@ export default defineComponent({
 .d-flex {
   display: flex;
   justify-content: center;
+}
+a {
+  display: block;
+  margin: 21.5px 0;
 }
 </style>

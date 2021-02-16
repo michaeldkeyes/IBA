@@ -16,29 +16,42 @@
         <span> {{ team.wins }} - {{ team.losses }} </span>
       </li>
     </div>
-    <div v-if="store.leadingScorer !== undefined">
-      <h4>Leading Scorers</h4>
-      <div v-for="player in store.leadingScorer" :key="player.playerId">
-        <h5>
-          {{ store.teams.find((team) => team.teamId === player.teamId).city }}
-          {{ player.first + " " + player.last }}
-          {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
-        </h5>
+    <div>
+      <div v-if="store.leadingScorers !== undefined">
+        <h4>Leading Scorers</h4>
+        <div v-for="player in store.leadingScorers" :key="player.playerId">
+          <h5>
+            {{ store.teams.find((team) => team.teamId === player.teamId).city }}
+            {{ player.first + " " + player.last }}
+            {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
+          </h5>
+        </div>
+      </div>
+      <div v-if="store.leadingThreePoints !== undefined">
+        <h4>Leading Three Point Shooter</h4>
+        <div v-for="player in store.leadingThreePoints" :key="player.playerId">
+          <h5>
+            {{ store.teams.find((team) => team.teamId === player.teamId).city }}
+            {{ player.first + " " + player.last }}
+            {{ player.stats.threepm }}
+            {{
+              ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1)
+            }}%
+          </h5>
+        </div>
+      </div>
+      <div v-if="store.leadingScorers !== undefined">
+        <h4>Leading Rebounders</h4>
+        <div v-for="player in store.leadingRebounders" :key="player.playerId">
+          <h5>
+            {{ store.teams.find((team) => team.teamId === player.teamId).city }}
+            {{ player.first + " " + player.last }}
+            {{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}
+          </h5>
+        </div>
       </div>
     </div>
-    <div v-if="store.leadingThreePoints !== undefined">
-      <h4>Leading Three Point Shooter</h4>
-      <div v-for="player in store.leadingThreePoints" :key="player.playerId">
-        <h5>
-          {{ store.teams.find((team) => team.teamId === player.teamId).city }}
-          {{ player.first + " " + player.last }}
-          {{ player.stats.threepm }}
-          {{
-            ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1)
-          }}%
-        </h5>
-      </div>
-    </div>
+
     <div>
       <h1>Eastern Conference</h1>
       <li v-for="team in store.easternConference" :key="team.teamId">
@@ -109,13 +122,13 @@ export default defineComponent({
           const homePlayers = store.players
             .filter((player) => player.teamId === game.homeTeamId)
             .sort(function (a, b) {
-              return a.overall > b.overall ? -1 : 1;
+              return a.scoring > b.scoring ? -1 : 1;
             });
           const homeTeam = store.teamStats[game.homeTeamId];
           const awayPlayers = store.players
             .filter((player) => player.teamId === game.awayTeamId)
             .sort(function (a, b) {
-              return a.overall > b.overall ? -1 : 1;
+              return a.scoring > b.scoring ? -1 : 1;
             });
           const awayTeam = store.teamStats[game.awayTeamId];
 

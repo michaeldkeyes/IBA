@@ -30,6 +30,12 @@ const routes: Array<RouteRecordRaw> = [
     props: true,
   },
   {
+    path: "/game/:gameId",
+    name: "Game",
+    component: () => import("../components/Game.vue"),
+    props: true,
+  },
+  {
     path: "/:catchAll(.*)",
     component: () => import("../components/NotFound.vue"),
   },

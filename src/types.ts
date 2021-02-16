@@ -6,22 +6,42 @@ export type Game = {
   overtimes: number;
 };
 
-export type Player = {
+export interface Player {
   playerId?: number;
+  position: string;
   overall: number;
   teamId: number;
   first: string;
   last: string;
   scoring: number;
-  twoTendency: number;
-  threeTendency: number;
+  twoRate: number;
+  threeRate: number;
   twoPercentage: number;
   threePercentage: number;
-  freeTendency: number;
+  freeRate: number;
   freePercentage: number;
+  offensiveRebounding: number;
+  defensiveRebounding: number;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
-};
+}
+
+export interface PlayerGameStats extends StatBase {
+  playerId: number;
+  name: string;
+  min: number;
+  attr: {
+    scoring: number;
+    twoRate: number;
+    twoPercentage: number;
+    threeRate: number;
+    threePercentage: number;
+    freeRate: number;
+    freePercentage: number;
+    offensiveRebounding: number;
+    defensiveRebounding: number;
+  };
+}
 
 export type Schedule = {
   gameId?: number;
@@ -30,7 +50,7 @@ export type Schedule = {
   awayTeamId: number;
 };
 
-export type StatBase = {
+export interface StatBase {
   points: number;
   fga: number;
   fgm: number;
@@ -38,7 +58,10 @@ export type StatBase = {
   threepm: number;
   fta: number;
   ftm: number;
-};
+  orb: number;
+  drb: number;
+  trb: number;
+}
 
 export type PlayerStats = {
   gamesPlayed?: number;
@@ -53,41 +76,12 @@ export type Team = {
   division: string;
 };
 
-export type TeamStats = {
+export interface TeamStats extends StatBase {
   teamId?: number;
-  points: number;
-  fga: number;
-  fgm: number;
-  threepa: number;
-  threepm: number;
-  fta: number;
-  ftm: number;
   wins: number;
   losses: number;
-  players?: PlayerGameStats[];
-};
-
-export type PlayerGameStats = {
-  playerId: number;
-  name: string;
-  points: number;
-  fga: number;
-  fgm: number;
-  threepa: number;
-  threepm: number;
-  fta: number;
-  ftm: number;
-  min: number;
-  attr: {
-    scoring: number;
-    twoTendency: number;
-    twoPercentage: number;
-    threeTendency: number;
-    threePercentage: number;
-    freeTendency: number;
-    freePercentage: number;
-  };
-};
+  players: PlayerGameStats[];
+}
 
 export type Meta = {
   day: number;
