@@ -29,7 +29,7 @@ function generatePlayers(): Player[] {
         ),
         twoPercentage: getRandomNumberInRange(
           playerRatings[j % 5].twoPercentageMin!,
-          playerRatings[1].twoPercentageMax!
+          playerRatings[j % 5].twoPercentageMax!
         ),
         threePercentage: getRandomNumberInRange(
           playerRatings[j % 5].threePercentageMin!,

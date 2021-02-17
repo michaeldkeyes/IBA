@@ -1,6 +1,6 @@
 <template>
   <div class="column is-flex is-flex-direction-column">
-    <div v-if="store.leadingScorers.length !== 0">
+    <div class="block" v-if="store.leadingScorers.length !== 0">
       <strong class="is-size-5">Leading Scorers</strong>
       <div v-for="player in store.leadingScorers" :key="player.playerId">
         <p>
@@ -10,7 +10,7 @@
         </p>
       </div>
     </div>
-    <div v-if="store.leadingThreePoints[0].stats.threepa !== 0">
+    <div class="block" v-if="store.leadingThreePoints[0].stats.threepa !== 0">
       <strong class="is-size-5">Leading Three Point Shooter</strong>
       <div v-for="player in store.leadingThreePoints" :key="player.playerId">
         <h5>
@@ -23,7 +23,7 @@
         </h5>
       </div>
     </div>
-    <div v-if="store.leadingScorers.length !== 0">
+    <div class="block" v-if="store.leadingScorers.length !== 0">
       <strong class="is-size-5">Leading Rebounders</strong>
       <div v-for="player in store.leadingRebounders" :key="player.playerId">
         <p>
@@ -43,7 +43,6 @@ import { useLeagueStore } from "../store/index";
 export default defineComponent({
   setup() {
     const store = useLeagueStore();
-    console.log(store.leadingThreePoints);
     return {
       store,
     };

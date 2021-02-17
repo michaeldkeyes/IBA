@@ -1,54 +1,213 @@
 <template>
-  <h2>{{ team.city }} {{ team.name }}</h2>
-  <h3>{{ teamStats.wins }} - {{ teamStats.losses }}</h3>
-  <div>
-    <router-link
-      :to="{ name: 'Schedule', params: { teamId: $route.params.teamId } }"
-      >Schedule</router-link
-    >
+  <div class="is-flex is-flex-direction-column is-align-items-center mb-5">
+    <h1 class="is-size-1">{{ team.city }} {{ team.name }}</h1>
+    <h3 class="is-size-3">{{ teamStats.wins }} - {{ teamStats.losses }}</h3>
+    <div>
+      <router-link
+        :to="{ name: 'Schedule', params: { teamId: $route.params.teamId } }"
+        >Schedule</router-link
+      >
+    </div>
   </div>
 
-  <li v-for="player in sortedPlayers" :key="player.playerId">
-    <router-link
-      :to="{ name: 'Player', params: { playerId: player.playerId } }"
-    >
-      <li>{{ player.first }} {{ player.last }}</li>
-    </router-link>
-    <span>
-      ovr:
-      {{ player.overall }}
-    </span>
-    <span>
-      ovr:
-      {{ player.position }}
-    </span>
-    <span>
-      ppg: {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
-    </span>
-    <span>
-      fg%: {{ ((player.stats.fgm / player.stats.fga) * 100).toFixed(1) }}%
-    </span>
-    <span>
-      min: {{ (player.stats.min / 60 / player.stats.gamesPlayed).toFixed(1) }}
-    </span>
-    <span
-      >3p: {{ player.stats.threepm }}/{{ player.stats.threepa }}
-      {{ ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1) }}%
-    </span>
-    <span
-      >ft: {{ player.stats.ftm }}/{{ player.stats.fta }}
-      {{ ((player.stats.ftm / player.stats.fta) * 100).toFixed(1) }}%
-    </span>
-    <span>
-      trb: {{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}
-    </span>
-    <span>
-      drb: {{ (player.stats.drb / player.stats.gamesPlayed).toFixed(1) }}
-    </span>
-    <span>
-      orb: {{ (player.stats.orb / player.stats.gamesPlayed).toFixed(1) }}
-    </span>
-  </li>
+  <div class="is-size-4">Team Stats</div>
+  <table class="table is-bordered is-narrow is-fullwidth">
+    <thead>
+      <tr>
+        <th>FG</th>
+        <th>FGA</th>
+        <th>FG%</th>
+        <th>3P</th>
+        <th>3PA</th>
+        <th>3P%</th>
+        <th>2P</th>
+        <th>2PA</th>
+        <th>2P%</th>
+        <th>FT</th>
+        <th>FTA</th>
+        <th>FT%</th>
+        <th>ORB</th>
+        <th>DRB</th>
+        <th>TRB</th>
+        <th>PTS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{ (teamStats.fgm / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
+          {{ (teamStats.fga / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
+          {{ (teamStats.fgm / teamStats.fga).toFixed(3) }}
+        </td>
+        <td>
+          {{
+            (teamStats.threepm / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.threepa / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{ (teamStats.threepm / teamStats.threepa).toFixed(3) }}
+        </td>
+        <td>
+          {{
+            (
+              (teamStats.fgm - teamStats.threepm) /
+              (teamStats.wins + teamStats.losses)
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (teamStats.fga - teamStats.threepa) /
+              (teamStats.wins + teamStats.losses)
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (teamStats.fgm - teamStats.threepm) /
+              (teamStats.fga - teamStats.threepa)
+            ).toFixed(3)
+          }}
+        </td>
+        <td>
+          {{ (teamStats.ftm / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
+          {{ (teamStats.fta / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>{{ (teamStats.ftm / teamStats.fta).toFixed(3) }}</td>
+        <td>
+          {{ (teamStats.orb / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
+          {{ (teamStats.drb / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
+          {{ (teamStats.trb / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
+          {{
+            (teamStats.points / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="is-size-4">Player Stats</div>
+  <table
+    class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+  >
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th><abbr title="Overall">Ovr</abbr></th>
+        <th><abbr title="Position">Pos</abbr></th>
+        <th><abbr title="Games Played">G</abbr></th>
+        <th><abbr title="Minutes Played Per Game">MP</abbr></th>
+        <th><abbr title="Field Goals Per Game">FG</abbr></th>
+        <th><abbr title="Field Goal Attempts Per Game">FGA</abbr></th>
+        <th><abbr title="Field Goal Percentage">FG%</abbr></th>
+        <th><abbr title="3-Point Field Goals Per Game">3P</abbr></th>
+        <th><abbr title="3-Point Field Goal Attempts Per Game">3PA</abbr></th>
+        <th><abbr title="3-Point Field Goal Percentage">3P%</abbr></th>
+        <th><abbr title="2-Point Field Goals Per Game">2P</abbr></th>
+        <th><abbr title="2-Point Field Goal Attempts Per Game">2PA</abbr></th>
+        <th><abbr title="2-Point Field Goal Percentage">2P%</abbr></th>
+        <th><abbr title="Effective Field Goal Percentage">eFG%</abbr></th>
+        <th><abbr title="Free Throws Per Game">FT</abbr></th>
+        <th><abbr title="Free Throw Attempts Per Game">FTA</abbr></th>
+        <th><abbr title="Free Throw Percentage">FT%</abbr></th>
+        <th><abbr title="Offensive Rebounds Per Game">ORB</abbr></th>
+        <th><abbr title="Defensive Rebounds Per Game">DRB</abbr></th>
+        <th><abbr title="Total Rebounds Per Game">TRB</abbr></th>
+        <th><abbr title="Points Per Game">PTS/G</abbr></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="player in sortedPlayers">
+        <td>
+          <router-link
+            :to="{ name: 'Player', params: { playerId: player.playerId } }"
+          >
+            {{ player.first }} {{ player.last }}
+          </router-link>
+        </td>
+        <td>{{ player.overall }}</td>
+        <td>{{ player.position }}</td>
+        <td>{{ player.stats.gamesPlayed }}</td>
+        <td>
+          {{ (player.stats.min / 60 / player.stats.gamesPlayed).toFixed(1) }}
+        </td>
+        <td>{{ (player.stats.fgm / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>{{ (player.stats.fga / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>{{ (player.stats.fgm / player.stats.fga).toFixed(3) }}</td>
+        <td>
+          {{ (player.stats.threepm / player.stats.gamesPlayed).toFixed(1) }}
+        </td>
+        <td>
+          {{ (player.stats.threepa / player.stats.gamesPlayed).toFixed(1) }}
+        </td>
+        <td>{{ (player.stats.threepm / player.stats.threepa).toFixed(3) }}</td>
+        <td>
+          {{
+            (
+              (player.stats.fgm - player.stats.threepm) /
+              player.stats.gamesPlayed
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (player.stats.fga - player.stats.threepa) /
+              player.stats.gamesPlayed
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (player.stats.fgm - player.stats.threepm) /
+              (player.stats.fga - player.stats.threepa)
+            ).toFixed(3)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (player.stats.fgm + 0.5 * player.stats.threepm) /
+              player.stats.fga
+            ).toFixed(3)
+          }}
+        </td>
+        <td>
+          {{ (player.stats.ftm / player.stats.gamesPlayed).toFixed(1) }}
+        </td>
+        <td>
+          {{ (player.stats.fta / player.stats.gamesPlayed).toFixed(1) }}
+        </td>
+        <td>{{ (player.stats.ftm / player.stats.fta).toFixed(3) }}</td>
+        <td>{{ (player.stats.orb / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>{{ (player.stats.drb / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>{{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>
+          {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script lang="ts">
@@ -81,18 +240,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-div {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-span {
-  margin-bottom: 10px;
-  margin-right: 10px;
-}
-li {
-  list-style-type: none;
-}
-</style>

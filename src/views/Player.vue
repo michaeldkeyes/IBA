@@ -1,5 +1,5 @@
 <template>
-  <router-link :to="{ name: 'Roster', params: { teamId: player.teamId } }">
+  <router-link :to="{ name: 'Team', params: { teamId: player.teamId } }">
     {{ store.teams[player.teamId].city }} {{ store.teams[player.teamId].name }}
   </router-link>
   <h1>{{ player.first }} {{ player.last }}</h1>
