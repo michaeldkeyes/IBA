@@ -138,7 +138,6 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
 
       substitutionTimes[i].time.push(getRandomNumberInRange(minValue, maxValue));
     }
-    //substitutionTimes[i].reverse();
   }
   
   

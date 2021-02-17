@@ -3,65 +3,15 @@
   <button @click="simGames(1)">Simulate Day</button>
   <button @click="simGames(7)">Simulate Week</button>
   <button @click="simGames(30)">Simulate Month</button>
-  <h1>{{ store.meta.season }} Season</h1>
-  <h2>Day {{ store.meta.day }}</h2>
-  <div class="d-flex" v-if="store.isReady">
-    <div>
-      <h1>Western Conference</h1>
-      <li v-for="team in store.westernConference" :key="team.teamId">
-        <router-link :to="{ name: 'Roster', params: { teamId: team.teamId } }">
-          {{ store.teams.find((team2) => team.teamId === team2.teamId).city }}
-          {{ store.teams.find((team2) => team.teamId === team2.teamId).name }}
-        </router-link>
-        <span> {{ team.wins }} - {{ team.losses }} </span>
-      </li>
-    </div>
-    <div>
-      <div v-if="store.leadingScorers !== undefined">
-        <h4>Leading Scorers</h4>
-        <div v-for="player in store.leadingScorers" :key="player.playerId">
-          <h5>
-            {{ store.teams.find((team) => team.teamId === player.teamId).city }}
-            {{ player.first + " " + player.last }}
-            {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
-          </h5>
-        </div>
-      </div>
-      <div v-if="store.leadingThreePoints !== undefined">
-        <h4>Leading Three Point Shooter</h4>
-        <div v-for="player in store.leadingThreePoints" :key="player.playerId">
-          <h5>
-            {{ store.teams.find((team) => team.teamId === player.teamId).city }}
-            {{ player.first + " " + player.last }}
-            {{ player.stats.threepm }}
-            {{
-              ((player.stats.threepm / player.stats.threepa) * 100).toFixed(1)
-            }}%
-          </h5>
-        </div>
-      </div>
-      <div v-if="store.leadingScorers !== undefined">
-        <h4>Leading Rebounders</h4>
-        <div v-for="player in store.leadingRebounders" :key="player.playerId">
-          <h5>
-            {{ store.teams.find((team) => team.teamId === player.teamId).city }}
-            {{ player.first + " " + player.last }}
-            {{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}
-          </h5>
-        </div>
-      </div>
-    </div>
+  <div class="is-flex is-flex-direction-column is-align-items-center mb-6">
+    <h1 class="is-size-1">{{ store.meta.season }} Season</h1>
+    <h2 class="is-size-4">Day {{ store.meta.day }}</h2>
+  </div>
 
-    <div>
-      <h1>Eastern Conference</h1>
-      <li v-for="team in store.easternConference" :key="team.teamId">
-        <router-link :to="{ name: 'Roster', params: { teamId: team.teamId } }">
-          {{ store.teams.find((team2) => team.teamId === team2.teamId).city }}
-          {{ store.teams.find((team2) => team.teamId === team2.teamId).name }}
-        </router-link>
-        <span>{{ team.wins }} - {{ team.losses }} </span>
-      </li>
-    </div>
+  <div class="is-flex is-flex-wrap-wrap columns" v-if="store.isReady">
+    <ConferenceStandings conference="Western Conference" />
+    <LeagueLeaders />
+    <ConferenceStandings conference="Eastern Conference" />
   </div>
 </template>
 
@@ -78,7 +28,14 @@ import generateSchedule from "../generators/generateSchedule";
 import generateTeamStats from "../generators/generateTeamStats";
 import simulate from "../simulate";
 
+import ConferenceStandings from "../components/ConferenceStandings.vue";
+import LeagueLeaders from "../components/LeagueLeaders.vue";
+
 export default defineComponent({
+  components: {
+    ConferenceStandings,
+    LeagueLeaders,
+  },
   setup() {
     const store = useLeagueStore();
 

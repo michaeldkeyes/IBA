@@ -1,13 +1,13 @@
 <template>
-  <div id="nav">
-    <router-link :to="{ name: 'Home' }">Home</router-link>
-    <router-link :to="{ name: 'Teams' }">Teams</router-link>
+  <div class="container">
+    <div>
+      <router-link :to="{ name: 'Home' }">Home</router-link>
+    </div>
+    <router-view />
   </div>
-  <router-view />
 </template>
 
 <script>
-import { provide } from "vue";
 import { db } from "./Database";
 
 export default {
