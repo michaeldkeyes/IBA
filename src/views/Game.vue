@@ -1,5 +1,35 @@
 <template>
-  <div class="d-flex center">
+  <div class="is-size-1 columns">
+    <div class="column is-flex is-flex-direction-column is-align-items-center">
+      <router-link :to="{ name: 'Team', params: { teamId: homeTeam.teamId } }"
+        >{{ homeTeam.city }} {{ homeTeam.name }}</router-link
+      >
+      <div>{{ game.teams[0].points }}</div>
+    </div>
+    <div class="column is-flex is-flex-direction-column is-align-items-center">
+      <router-link :to="{ name: 'Team', params: { teamId: awayTeam.teamId } }"
+        >{{ awayTeam.city }} {{ awayTeam.name }}</router-link
+      >
+      <div>{{ game.teams[1].points }}</div>
+    </div>
+  </div>
+  <div class="mb-6">
+    <router-link
+      class="is-size-4"
+      :to="{ name: 'Team', params: { teamId: homeTeam.teamId } }"
+      >{{ homeTeam.city }} {{ homeTeam.name }}</router-link
+    >
+    <PlayerGameStats :team="game.teams[0]" />
+  </div>
+  <div>
+    <router-link
+      class="is-size-4"
+      :to="{ name: 'Team', params: { teamId: awayTeam.teamId } }"
+      >{{ awayTeam.city }} {{ awayTeam.name }}</router-link
+    >
+    <PlayerGameStats :team="game.teams[1]" />
+  </div>
+  <!-- <div class="d-flex center">
     <router-link
       :to="{ name: 'Team', params: { teamId: homeTeam.teamId } }"
       class="team-link"
@@ -100,16 +130,21 @@
         <h4>{{ player.points }} pts {{ (player.min / 60).toFixed(1) }} min</h4>
       </h5>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useLeagueStore } from "../store/index";
 
+import PlayerGameStats from "../components/PlayerGameStats.vue";
+
 export default defineComponent({
   props: {
     gameId: { type: String, required: true },
+  },
+  components: {
+    PlayerGameStats,
   },
   setup(props) {
     const store = useLeagueStore();
@@ -131,27 +166,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.d-flex {
-  display: flex;
-}
-.center {
-  justify-content: center;
-}
-.around {
-  justify-content: space-around;
-}
-h5 {
-  margin: 10px 0;
-}
-.team-link {
-  font-size: 32px;
-  text-decoration: none;
-  margin: 20px 0;
-}
-.player-link {
-  font-size: 14px;
-  text-decoration: none;
-}
-</style>

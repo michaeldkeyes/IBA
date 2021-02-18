@@ -19,6 +19,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     return {
       playerId: player.playerId!,
       name: player.first +  ' ' + player.last,
+      pos: player.position,
       points: 0,
       fga: 0,
       fgm: 0,
@@ -47,6 +48,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     return {
       playerId: player.playerId!,
       name: player.first +  ' ' + player.last,
+      pos: player.position,
       points: 0,
       fga: 0,
       fgm: 0,

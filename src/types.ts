@@ -30,6 +30,7 @@ export interface PlayerGameStats extends StatBase {
   playerId: number;
   name: string;
   min: number;
+  pos: string;
   attr: {
     scoring: number;
     twoRate: number;

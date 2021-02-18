@@ -61,32 +61,6 @@
         </div>
       </div>
     </div>
-
-    <!-- <div>
-      <h4 v-for="game in schedule" :key="game.gameId">
-        {{ store.teams[game.homeTeamId].city }} at
-        {{ store.teams[game.awayTeamId].city }}
-        on day {{ game.day }}
-      </h4>
-    </div>
-    <div>
-      <router-link
-        :to="{ name: 'Game', params: { gameId: game.gameId } }"
-        v-for="game in gamesPlayed"
-      >
-        {{
-          game.teams[0].teamId === game.winner.teamId
-            ? game.winner.points
-            : game.loser.points
-        }}
-        -
-        {{
-          game.teams[1].teamId === game.winner.teamId
-            ? game.winner.points
-            : game.loser.points
-        }}
-      </router-link>
-    </div> -->
   </div>
 </template>
 
