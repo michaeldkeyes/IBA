@@ -1,13 +1,13 @@
 <template>
   <div class="d-flex center">
     <router-link
-      :to="{ name: 'Roster', params: { teamId: homeTeam.teamId } }"
+      :to="{ name: 'Team', params: { teamId: homeTeam.teamId } }"
       class="team-link"
       >{{ homeTeam.city }} {{ homeTeam.name }}</router-link
     >
     <h1>&nbsp;-&nbsp;</h1>
     <router-link
-      :to="{ name: 'Roster', params: { teamId: awayTeam.teamId } }"
+      :to="{ name: 'Team', params: { teamId: awayTeam.teamId } }"
       class="team-link"
       >{{ awayTeam.city }} {{ awayTeam.name }}</router-link
     >

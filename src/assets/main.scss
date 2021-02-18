@@ -1,1 +1,8 @@
+@import "variables";
 @import "node_modules/bulma/bulma.sass";
+@import "overrides";
+
+.has-border {
+  border-width: $border-width;
+  border-color: $border;
+}

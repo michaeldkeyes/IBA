@@ -1,6 +1,68 @@
 <template>
-  <div class="d-flex">
-    <div>
+  <div class="is-flex is-flex-direction-column is-align-items-center">
+    <div class="mb-3">
+      <div class="is-size-1 has-text-centered">Schedule</div>
+      <div class="is-size-3">{{ team.city }} {{ team.name }}</div>
+    </div>
+
+    <div class="is-flex is-flex-direction-column scorebox">
+      <div
+        class="is-flex is-align-items-center mb-4"
+        v-for="(game, index) in schedule"
+        :key="game.gameId"
+      >
+        <div class="is-flex-grow-1">
+          <div class="has-border">
+            <div
+              class="is-flex is-align-items-center"
+              :class="[
+                gamesPlayed[index] !== undefined &&
+                gamesPlayed[index].winner.teamId ===
+                  gamesPlayed[index].teams[0].teamId
+                  ? color(gamesPlayed[index].winner.teamId)
+                  : '',
+              ]"
+            >
+              <div class="is-flex-grow-1 p-1">
+                {{ store.teams[game.homeTeamId].city }}
+                {{ store.teams[game.homeTeamId].name }}
+              </div>
+              <div class="p-1" v-if="gamesPlayed[index] !== undefined">
+                <router-link
+                  :to="{ name: 'Game', params: { gameId: game.gameId } }"
+                >
+                  {{ gamesPlayed[index].teams[0].points }}
+                </router-link>
+              </div>
+            </div>
+            <div
+              class="is-flex is-align-items-center"
+              :class="[
+                gamesPlayed[index] !== undefined &&
+                gamesPlayed[index].winner.teamId ===
+                  gamesPlayed[index].teams[1].teamId
+                  ? color(gamesPlayed[index].winner.teamId)
+                  : '',
+              ]"
+            >
+              <div class="is-flex-grow-1 p-1">
+                {{ store.teams[game.awayTeamId].city }}
+                {{ store.teams[game.awayTeamId].name }}
+              </div>
+              <div class="p-1" v-if="gamesPlayed[index] !== undefined">
+                <router-link
+                  :to="{ name: 'Game', params: { gameId: game.gameId } }"
+                >
+                  {{ gamesPlayed[index].teams[1].points }}
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div>
       <h4 v-for="game in schedule" :key="game.gameId">
         {{ store.teams[game.homeTeamId].city }} at
         {{ store.teams[game.awayTeamId].city }}
@@ -24,7 +86,7 @@
             : game.loser.points
         }}
       </router-link>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -36,7 +98,7 @@ export default defineComponent({
   props: { teamId: { type: String, required: true } },
   setup(props) {
     const store = useLeagueStore();
-    const schedule: any = store.schedule.filter(
+    const schedule = store.schedule.filter(
       (game) =>
         game.homeTeamId === parseInt(props.teamId) ||
         game.awayTeamId === parseInt(props.teamId)
@@ -46,23 +108,37 @@ export default defineComponent({
         game.winner.teamId === parseInt(props.teamId) ||
         game.loser.teamId === parseInt(props.teamId)
     );
+    const team = store.teams.find(
+      (team) => team.teamId === parseInt(props.teamId)
+    );
+
+    const color = (winnerTeamId: number) => {
+      if (winnerTeamId === parseInt(props.teamId)) {
+        return "has-background-success";
+      } else {
+        return "has-background-danger";
+      }
+    };
 
     return {
       store,
       schedule,
       gamesPlayed,
+      team,
+      color,
     };
   },
 });
 </script>
 
 <style scoped>
-.d-flex {
-  display: flex;
-  justify-content: center;
+.has-border {
+  border: 1px solid #e67e22;
 }
-a {
-  display: block;
-  margin: 21.5px 0;
+
+.scorebox {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 </style>
