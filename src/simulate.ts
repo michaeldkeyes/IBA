@@ -14,7 +14,6 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
   let players = [homePlayers, awayPlayers];
   let teams: TeamStats[] = [homeTeam, awayTeam];
 
-
   let homePlayersStats: PlayerGameStats[] = homePlayers.map(player => {
     return {
       playerId: player.playerId!,
@@ -31,6 +30,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       orb: 0,
       drb: 0,
       trb: 0,
+      ast: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -41,6 +41,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         freePercentage: player.freePercentage,
         offensiveRebounding: player.offensiveRebounding,
         defensiveRebounding: player.defensiveRebounding,
+        passing: player.passing,
       }
     }
   })
@@ -60,6 +61,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       orb: 0,
       drb: 0,
       trb: 0,
+      ast: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -70,6 +72,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         freePercentage: player.freePercentage,
         offensiveRebounding: player.offensiveRebounding,
         defensiveRebounding: player.defensiveRebounding,
+        passing: player.passing
       }
     }
   })
@@ -93,6 +96,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       orb: 0,
       drb: 0,
       trb: 0,
+      ast: 0,
       players: homePlayersStats
     }, {
       teamId: awayTeam.teamId,
@@ -108,6 +112,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       orb: 0,
       drb: 0,
       trb: 0,
+      ast: 0,
       players: awayPlayersStats
     }]
   }
@@ -150,26 +155,47 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
   let playersOnBench = [gameResult.teams[0].players!.slice(5, 10), gameResult.teams[1].players!.slice(5, 10)];
   //let playersInReserve = [gameResult.teams[0].players!.slice(11, gameResult.teams[0].players!.length), gameResult.teams[1].players!.slice(11, gameResult.teams[1].players!.length)]
   while (gameClock < lengthOfGame) {
-    const shotClock = getRandomNumberInRange(4,25);
+    const shotClock = getRandomNumberInRange(6,25);
     gameClock += shotClock;
 
     increaseMinutes(playersOnCourt[offense], shotClock);
     increaseMinutes(playersOnCourt[defense], shotClock);
 
     const playerToShoot = whoShoots(playersOnCourt[offense]);
+    const playerToAssist = whoAssists(playersOnCourt[offense], playerToShoot);
+    let shotModifier = 0;
+    if (playerToAssist) {
+      shotModifier = .25;
+    }
     let fouled = false;
-    if (getRandomNumber(1000) <= playerToShoot!.attr.freeRate) {
+    if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
       fouled = true;
     }
 
-    if (getRandomNumber(1000) <= playerToShoot!.attr.twoRate) {
-      if (getRandomNumber(1000) <= playerToShoot!.attr.twoPercentage) {
+    if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
+      // if (playerToAssist) {
+      //   gameResult.teams[offense].points += 2;
+      //   gameResult.teams[offense].fga++;
+      //   gameResult.teams[offense].fgm++;
+      //   gameResult.teams[offense].ast++;
+      //   playerToShoot.points += 2;
+      //   playerToShoot.fga++;
+      //   playerToShoot.fgm++;
+      //   playerToAssist.ast++;
+      //   if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
+      //   changePossession();
+      // } else 
+      if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + (playerToShoot.attr.twoPercentage * shotModifier)) {
         gameResult.teams[offense].points += 2;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;
         playerToShoot!.points += 2;
         playerToShoot!.fga++;
         playerToShoot!.fgm++;
+        if (playerToAssist) {
+          gameResult.teams[offense].ast++;
+          playerToAssist.ast++
+        }
         if (fouled) shootFreeThrows(playerToShoot!, 1, gameResult.teams[offense]);
         changePossession();
       } else {
@@ -183,7 +209,22 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         }
       }
     } else {
-      if (getRandomNumber(1000) <= playerToShoot!.attr.threePercentage) {
+      // if (playerToAssist) {
+      //   gameResult.teams[offense].points += 3;
+      //   gameResult.teams[offense].fga++;
+      //   gameResult.teams[offense].fgm++;
+      //   gameResult.teams[offense].threepa++;
+      //   gameResult.teams[offense].threepm++;
+      //   gameResult.teams[offense].ast++;
+      //   playerToShoot.points += 3;
+      //   playerToShoot.fga++;
+      //   playerToShoot.fgm++;
+      //   playerToShoot.threepa++;
+      //   playerToShoot.threepm++;
+      //   playerToAssist.ast++;
+      //   changePossession();
+      // } else 
+      if (getRandomNumber(1000) <= playerToShoot.attr.threePercentage + (playerToShoot.attr.threePercentage * shotModifier)) {
         gameResult.teams[offense].points += 3;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;
@@ -194,6 +235,10 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         playerToShoot!.fgm++;
         playerToShoot!.threepa++;
         playerToShoot!.threepm++;
+        if (playerToAssist) {
+          gameResult.teams[offense].ast++;
+          playerToAssist.ast++;
+        }
         changePossession();
       } else {
         gameResult.teams[offense].fga++;
@@ -221,7 +266,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
   // Add the players game stats to their season stats
   for (let i = 0; i < players.length; i++) {
     players[i].forEach(player => {
-      let playerToAddStatsFrom = gameResult.teams[i].players?.find(player2 => player.playerId === player2.playerId);
+      let playerToAddStatsFrom = gameResult.teams[i].players.find(player2 => player.playerId === player2.playerId);
       player.stats.fga += playerToAddStatsFrom!.fga;
       player.stats.fgm += playerToAddStatsFrom!.fgm;
       player.stats.min += playerToAddStatsFrom!.min;
@@ -233,6 +278,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       player.stats.orb += playerToAddStatsFrom!.orb;
       player.stats.drb += playerToAddStatsFrom!.drb;
       player.stats.trb += playerToAddStatsFrom!.trb;
+      player.stats.ast += playerToAddStatsFrom!.ast;
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -253,6 +299,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     teams[i].orb += gameResult.teams[i].orb;
     teams[i].drb += gameResult.teams[i].drb;
     teams[i].trb += gameResult.teams[i].trb;
+    teams[i].ast += gameResult.teams[i].ast;
     if (i === winner) {
       teams[i].wins++;
       gameResult.winner = {
@@ -319,7 +366,7 @@ function whoShoots(playersOnCourt: PlayerGameStats[]) {
       return playersOnCourt[i];
     }
   }
-  console.log("Oopsie!");
+  return playersOnCourt[0];
 }
 
 function shootFreeThrows(playerToShoot: PlayerGameStats, num: number, team: TeamStats) {
@@ -375,7 +422,6 @@ function whoGetsRebound(
       }
     }
   } else if (rng > defensiveChance && rng <= totalChance) {
-    //whoGetsRebound(offense, true, offenseTotal);
     rng = getRandomNumber(offenseTotal);
     let min = 0;
     let max = 0;
@@ -393,6 +439,30 @@ function whoGetsRebound(
   } else {
     console.log("No one rebounded the ball...");
   }
+}
+
+function whoAssists(team: PlayerGameStats[], playerToShoot: PlayerGameStats) {
+  // The player who is shooting cannot pass to themselves
+  team = team.filter((player) => {
+    return player.playerId !== playerToShoot.playerId;
+  });
+
+  const teamPassing = team.map((player) => player.attr.passing).reduce((max, cur) => max + cur);
+
+  if (getRandomNumber(1000) < teamPassing) {
+    const rng = getRandomNumber(teamPassing);
+    let min = 0;
+    let max = 0;
+    for (let i = 0; i < team.length; i++) {
+      min = max;
+      max = team[i].attr.passing + min;
+      if (rng < max && rng >= min) {
+        return team[i];
+      }
+    }
+  }
+
+  return null;
 }
 
 export default simulate;

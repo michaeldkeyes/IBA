@@ -29,6 +29,7 @@
         <th>ORB</th>
         <th>DRB</th>
         <th>TRB</th>
+        <th>AST</th>
         <th>PTS</th>
       </tr>
     </thead>
@@ -97,6 +98,9 @@
           {{ (teamStats.trb / (teamStats.wins + teamStats.losses)).toFixed(1) }}
         </td>
         <td>
+          {{ (teamStats.ast / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
           {{
             (teamStats.points / (teamStats.wins + teamStats.losses)).toFixed(1)
           }}
@@ -132,6 +136,7 @@
         <th><abbr title="Offensive Rebounds Per Game">ORB</abbr></th>
         <th><abbr title="Defensive Rebounds Per Game">DRB</abbr></th>
         <th><abbr title="Total Rebounds Per Game">TRB</abbr></th>
+        <th><abbr title="Assist Per Game">AST</abbr></th>
         <th><abbr title="Points Per Game">PTS/G</abbr></th>
       </tr>
     </thead>
@@ -202,6 +207,7 @@
         <td>{{ (player.stats.orb / player.stats.gamesPlayed).toFixed(1) }}</td>
         <td>{{ (player.stats.drb / player.stats.gamesPlayed).toFixed(1) }}</td>
         <td>{{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>{{ (player.stats.ast / player.stats.gamesPlayed).toFixed(1) }}</td>
         <td>
           {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
         </td>

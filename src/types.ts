@@ -22,6 +22,7 @@ export interface Player {
   freePercentage: number;
   offensiveRebounding: number;
   defensiveRebounding: number;
+  passing: number;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
 }
@@ -41,6 +42,7 @@ export interface PlayerGameStats extends StatBase {
     freePercentage: number;
     offensiveRebounding: number;
     defensiveRebounding: number;
+    passing: number;
   };
 }
 
@@ -62,6 +64,7 @@ export interface StatBase {
   orb: number;
   drb: number;
   trb: number;
+  ast: number;
 }
 
 export type PlayerStats = {
