@@ -20,6 +20,8 @@ export default [
     passingMax: 350,
     stealMin: 10,
     stealMax: 30,
+    blockMin: 1,
+    blockMax: 17,
   },
   {
     // SG ratings
@@ -43,6 +45,8 @@ export default [
     passingMax: 225,
     stealMin: 8,
     stealMax: 31,
+    blockMin: 1,
+    blockMax: 20,
   },
   {
     // SF ratings
@@ -66,6 +70,8 @@ export default [
     passingMax: 200,
     stealMin: 10,
     stealMax: 25,
+    blockMin: 5,
+    blockMax: 27,
   },
   {
     // PF ratings
@@ -89,6 +95,8 @@ export default [
     passingMax: 175,
     stealMin: 6,
     stealMax: 22,
+    blockMin: 9,
+    blockMax: 51,
   },
   {
     // C ratings
@@ -112,5 +120,7 @@ export default [
     passingMax: 150,
     stealMin: 3,
     stealMax: 20,
+    blockMin: 19,
+    blockMax: 75,
   },
 ];

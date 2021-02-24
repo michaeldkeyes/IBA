@@ -31,6 +31,7 @@
         <th>TRB</th>
         <th>AST</th>
         <th>STL</th>
+        <th>BLK</th>
         <th>PTS</th>
       </tr>
     </thead>
@@ -105,6 +106,9 @@
           {{ (teamStats.stl / (teamStats.wins + teamStats.losses)).toFixed(1) }}
         </td>
         <td>
+          {{ (teamStats.blk / (teamStats.wins + teamStats.losses)).toFixed(1) }}
+        </td>
+        <td>
           {{
             (teamStats.points / (teamStats.wins + teamStats.losses)).toFixed(1)
           }}
@@ -142,6 +146,7 @@
         <th><abbr title="Total Rebounds Per Game">TRB</abbr></th>
         <th><abbr title="Assist Per Game">AST</abbr></th>
         <th><abbr title="Steals Per Game">STL</abbr></th>
+        <th><abbr title="Blocks Per Game">BLK</abbr></th>
         <th><abbr title="Points Per Game">PTS/G</abbr></th>
       </tr>
     </thead>
@@ -214,6 +219,7 @@
         <td>{{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}</td>
         <td>{{ (player.stats.ast / player.stats.gamesPlayed).toFixed(1) }}</td>
         <td>{{ (player.stats.stl / player.stats.gamesPlayed).toFixed(1) }}</td>
+        <td>{{ (player.stats.blk / player.stats.gamesPlayed).toFixed(1) }}</td>
         <td>
           {{ (player.stats.points / player.stats.gamesPlayed).toFixed(1) }}
         </td>

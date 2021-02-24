@@ -53,6 +53,16 @@
         </p>
       </div>
     </div>
+    <div class="block" v-if="blocksLeaders.length !== 0">
+      <strong class="is-size-5">Blocks Leaders</strong>
+      <div v-for="player in blocksLeaders" :key="player.playerId">
+        <p>
+          {{ store.teams.find((team) => team.teamId === player.teamId).city }}
+          {{ player.first + " " + player.last }}
+          {{ (player.stats.blk / player.stats.gamesPlayed).toFixed(1) }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -85,11 +95,23 @@ export default defineComponent({
         })
         .slice(0, 3);
     });
+    const blocksLeaders = computed(() => {
+      return store.players
+        .filter((player) => player.stats.gamesPlayed! > 0)
+        .sort((a, b) => {
+          return a.stats.blk / a.stats.gamesPlayed! >=
+            b.stats.blk / b.stats.gamesPlayed!
+            ? -1
+            : 1;
+        })
+        .slice(0, 3);
+    });
 
     return {
       store,
       leadingPassers,
       stealsLeaders,
+      blocksLeaders,
     };
   },
 });

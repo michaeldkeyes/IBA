@@ -56,6 +56,7 @@ function generatePlayers(): Player[] {
           playerRatings[rng].passingMin,
           playerRatings[rng].passingMax
         ),
+        blocking: getRandomNumberInRange(playerRatings[rng].blockMin, playerRatings[rng].blockMax),
         stealing: getRandomNumberInRange(playerRatings[rng].stealMin, playerRatings[rng].stealMax),
         stats: {
           gamesPlayed: 0,
@@ -72,6 +73,7 @@ function generatePlayers(): Player[] {
           trb: 0,
           ast: 0,
           stl: 0,
+          blk: 0,
         },
       };
       player.twoRate = 1000 - player.threeRate;

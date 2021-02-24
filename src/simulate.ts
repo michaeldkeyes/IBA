@@ -32,6 +32,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       trb: 0,
       ast: 0,
       stl: 0,
+      blk: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -44,6 +45,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         defensiveRebounding: player.defensiveRebounding,
         passing: player.passing,
         stealing: player.stealing,
+        blocking: player.blocking,
       }
     }
   })
@@ -65,6 +67,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       trb: 0,
       ast: 0,
       stl: 0,
+      blk: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -76,7 +79,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         offensiveRebounding: player.offensiveRebounding,
         defensiveRebounding: player.defensiveRebounding,
         passing: player.passing,
-        stealing: player.stealing
+        stealing: player.stealing,
+        blocking: player.blocking
       }
     }
   })
@@ -102,6 +106,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       trb: 0,
       ast: 0,
       stl: 0,
+      blk: 0,
       players: homePlayersStats
     }, {
       teamId: awayTeam.teamId,
@@ -119,6 +124,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       trb: 0,
       ast: 0,
       stl: 0,
+      blk: 0,
       players: awayPlayersStats
     }]
   }
@@ -182,7 +188,10 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     }
 
     if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
-      if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
+      if (checkForBlock(playersOnCourt[defense], playerToShoot, gameResult.teams)) {
+        whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
+      }
+      else if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
         gameResult.teams[offense].points += 2;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;
@@ -221,6 +230,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
           gameResult.teams[offense].ast++;
           playerToAssist.ast++;
         }
+        if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
         changePossession();
       } else {
         gameResult.teams[offense].fga++;
@@ -262,6 +272,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       player.stats.trb += playerToAddStatsFrom!.trb;
       player.stats.ast += playerToAddStatsFrom!.ast;
       player.stats.stl += playerToAddStatsFrom!.stl;
+      player.stats.blk += playerToAddStatsFrom!.blk;
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -284,6 +295,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     teams[i].trb += gameResult.teams[i].trb;
     teams[i].ast += gameResult.teams[i].ast;
     teams[i].stl += gameResult.teams[i].stl;
+    teams[i].blk += gameResult.teams[i].blk;
     if (i === winner) {
       teams[i].wins++;
       gameResult.winner = {
@@ -303,9 +315,12 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
 }
 
 function changePossession() {
-  const temp = offense;
+  let temp = offense;
   offense = defense;
   defense = temp;
+
+  // offense = 0 ? 1 : 0;
+  // defense = 1 ? 0 : 1;
 }
 
 function increaseMinutes(players: PlayerGameStats[], count: number) {
@@ -468,7 +483,40 @@ function checkForSteal(team: PlayerGameStats[], gameResultDefense: TeamStats) {
         return true;
       }
     }
-  } else return false;
+  }
+
+  return false;
+}
+
+function checkForBlock(
+  defenseTeam: PlayerGameStats[],
+  playerToShoot: PlayerGameStats,
+  gameResultTeams: TeamStats[]
+) {
+  // Get the defese's total ability to block
+  const blockTotal = defenseTeam
+    .map((player) => player.attr.blocking)
+    .reduce((max, cur) => max + cur);
+
+  if (getRandomNumber(1000) <= blockTotal) {
+    // Defense blocked the ball. Find out who gets credited with the block
+    const rng = getRandomNumber(blockTotal);
+    let min = 0;
+    let max = 0;
+    for (let i = 0; i < defenseTeam.length; i++) {
+      min = max;
+      max = defenseTeam[i].attr.blocking + min;
+      if (rng < max && rng >= min) {
+        defenseTeam[i].blk++;
+        gameResultTeams[defense].blk++;
+        gameResultTeams[offense].fga++;
+        playerToShoot.fga++;
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 export default simulate;
