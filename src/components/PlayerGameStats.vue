@@ -15,6 +15,7 @@
         <th>FTA</th>
         <th>ORB</th>
         <th>TRB</th>
+        <th>AST</th>
         <th>PTS</th>
       </tr>
     </thead>
@@ -31,6 +32,7 @@
         <th>{{ team.fta }}</th>
         <th>{{ team.orb }}</th>
         <th>{{ team.trb }}</th>
+        <th>{{ team.ast }}</th>
         <th>{{ team.points }}</th>
       </tr>
       <tr>
@@ -64,6 +66,7 @@
         <td>{{ player.fta }}</td>
         <td>{{ player.orb }}</td>
         <td>{{ player.trb }}</td>
+        <td>{{ player.ast }}</td>
         <td>{{ player.points }}</td>
       </tr>
     </tbody>
