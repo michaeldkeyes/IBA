@@ -13,6 +13,7 @@
   <h4>Offensive Rebounding: {{ player.offensiveRebounding }}</h4>
   <h4>Defensive Rebounding: {{ player.defensiveRebounding }}</h4>
   <h4>Passing: {{ player.passing }}</h4>
+  <h4>Stealing: {{ player.stealing }}</h4>
 </template>
 
 <script lang="ts">

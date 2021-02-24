@@ -44,7 +44,7 @@ export default [
   {
     teamId: 6,
     city: "Toronto",
-    name: "Canada",
+    name: "Mounties",
     conference: "West",
     division: "North America",
   },
@@ -128,7 +128,7 @@ export default [
   {
     teamId: 18,
     city: "Istanbul",
-    name: "Turkey",
+    name: "Falcons",
     conference: "East",
     division: "Middle East",
   },
@@ -142,14 +142,14 @@ export default [
   {
     teamId: 20,
     city: "Singapore",
-    name: "Singapore",
+    name: "Pirates",
     conference: "East",
     division: "Island",
   },
   {
     teamId: 21,
     city: "Jakarta",
-    name: "Indonesia",
+    name: "Sharks",
     conference: "East",
     division: "Island",
   },
@@ -163,7 +163,7 @@ export default [
   {
     teamId: 23,
     city: "Kuala Lumpur",
-    name: "Malaysia",
+    name: "Dolphins",
     conference: "East",
     division: "Island",
   },

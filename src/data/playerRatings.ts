@@ -18,6 +18,8 @@ export default [
     defensiveReboundingMax: 150,
     passingMin: 200,
     passingMax: 350,
+    stealMin: 10,
+    stealMax: 30,
   },
   {
     // SG ratings
@@ -39,6 +41,8 @@ export default [
     defensiveReboundingMax: 160,
     passingMin: 125,
     passingMax: 225,
+    stealMin: 8,
+    stealMax: 31,
   },
   {
     // SF ratings
@@ -60,6 +64,8 @@ export default [
     defensiveReboundingMax: 200,
     passingMin: 100,
     passingMax: 200,
+    stealMin: 10,
+    stealMax: 25,
   },
   {
     // PF ratings
@@ -81,6 +87,8 @@ export default [
     defensiveReboundingMax: 300,
     passingMin: 75,
     passingMax: 175,
+    stealMin: 6,
+    stealMax: 22,
   },
   {
     // C ratings
@@ -102,5 +110,7 @@ export default [
     defensiveReboundingMax: 350,
     passingMin: 50,
     passingMax: 150,
+    stealMin: 3,
+    stealMax: 20,
   },
 ];

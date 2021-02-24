@@ -25,37 +25,38 @@ function generatePlayers(): Player[] {
         scoring,
         twoRate: 0,
         threeRate: getRandomNumberInRange(
-          playerRatings[rng].threeRateMin!,
-          playerRatings[rng].threeRateMax!
+          playerRatings[rng].threeRateMin,
+          playerRatings[rng].threeRateMax
         ),
         twoPercentage: getRandomNumberInRange(
-          playerRatings[rng].twoPercentageMin!,
-          playerRatings[rng].twoPercentageMax!
+          playerRatings[rng].twoPercentageMin,
+          playerRatings[rng].twoPercentageMax
         ),
         threePercentage: getRandomNumberInRange(
-          playerRatings[rng].threePercentageMin!,
-          playerRatings[rng].threePercentageMax!
+          playerRatings[rng].threePercentageMin,
+          playerRatings[rng].threePercentageMax
         ),
         freeRate: getRandomNumberInRange(
-          playerRatings[rng].freeRateMin!,
-          playerRatings[rng].freeRateMax!
+          playerRatings[rng].freeRateMin,
+          playerRatings[rng].freeRateMax
         ),
         freePercentage: getRandomNumberInRange(
-          playerRatings[rng].freePercentageMin!,
-          playerRatings[rng].freePercentageMax!
+          playerRatings[rng].freePercentageMin,
+          playerRatings[rng].freePercentageMax
         ),
         offensiveRebounding: getRandomNumberInRange(
-          playerRatings[rng].offensiveReboundingMin!,
-          playerRatings[rng].offensiveReboundingMax!
+          playerRatings[rng].offensiveReboundingMin,
+          playerRatings[rng].offensiveReboundingMax
         ),
         defensiveRebounding: getRandomNumberInRange(
-          playerRatings[rng].defensiveReboundingMin!,
-          playerRatings[rng].defensiveReboundingMax!
+          playerRatings[rng].defensiveReboundingMin,
+          playerRatings[rng].defensiveReboundingMax
         ),
         passing: getRandomNumberInRange(
-          playerRatings[rng].passingMin!,
-          playerRatings[rng].passingMax!
+          playerRatings[rng].passingMin,
+          playerRatings[rng].passingMax
         ),
+        stealing: getRandomNumberInRange(playerRatings[rng].stealMin, playerRatings[rng].stealMax),
         stats: {
           gamesPlayed: 0,
           points: 0,
@@ -70,6 +71,7 @@ function generatePlayers(): Player[] {
           drb: 0,
           trb: 0,
           ast: 0,
+          stl: 0,
         },
       };
       player.twoRate = 1000 - player.threeRate;

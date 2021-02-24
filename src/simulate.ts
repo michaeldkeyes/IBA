@@ -31,6 +31,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       drb: 0,
       trb: 0,
       ast: 0,
+      stl: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -42,6 +43,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         offensiveRebounding: player.offensiveRebounding,
         defensiveRebounding: player.defensiveRebounding,
         passing: player.passing,
+        stealing: player.stealing,
       }
     }
   })
@@ -62,6 +64,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       drb: 0,
       trb: 0,
       ast: 0,
+      stl: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -72,7 +75,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         freePercentage: player.freePercentage,
         offensiveRebounding: player.offensiveRebounding,
         defensiveRebounding: player.defensiveRebounding,
-        passing: player.passing
+        passing: player.passing,
+        stealing: player.stealing
       }
     }
   })
@@ -97,6 +101,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       drb: 0,
       trb: 0,
       ast: 0,
+      stl: 0,
       players: homePlayersStats
     }, {
       teamId: awayTeam.teamId,
@@ -113,6 +118,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       drb: 0,
       trb: 0,
       ast: 0,
+      stl: 0,
       players: awayPlayersStats
     }]
   }
@@ -162,6 +168,9 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     increaseMinutes(playersOnCourt[defense], shotClock);
 
     const playerToShoot = whoShoots(playersOnCourt[offense]);
+    if (checkForSteal(playersOnCourt[defense], gameResult.teams[defense])) {
+      continue;
+    }
     const playerToAssist = whoAssists(playersOnCourt[offense], playerToShoot);
     let shotModifier = 0;
     if (playerToAssist) {
@@ -173,19 +182,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     }
 
     if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
-      // if (playerToAssist) {
-      //   gameResult.teams[offense].points += 2;
-      //   gameResult.teams[offense].fga++;
-      //   gameResult.teams[offense].fgm++;
-      //   gameResult.teams[offense].ast++;
-      //   playerToShoot.points += 2;
-      //   playerToShoot.fga++;
-      //   playerToShoot.fgm++;
-      //   playerToAssist.ast++;
-      //   if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
-      //   changePossession();
-      // } else 
-      if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + (playerToShoot.attr.twoPercentage * shotModifier)) {
+      if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
         gameResult.teams[offense].points += 2;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;
@@ -196,11 +193,11 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
           gameResult.teams[offense].ast++;
           playerToAssist.ast++
         }
-        if (fouled) shootFreeThrows(playerToShoot!, 1, gameResult.teams[offense]);
+        if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
         changePossession();
       } else {
         if (fouled) {
-          shootFreeThrows(playerToShoot!, 2, gameResult.teams[offense]);
+          shootFreeThrows(playerToShoot, 2, gameResult.teams[offense]);
           changePossession()
         } else {
           gameResult.teams[offense].fga++;
@@ -209,21 +206,6 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         }
       }
     } else {
-      // if (playerToAssist) {
-      //   gameResult.teams[offense].points += 3;
-      //   gameResult.teams[offense].fga++;
-      //   gameResult.teams[offense].fgm++;
-      //   gameResult.teams[offense].threepa++;
-      //   gameResult.teams[offense].threepm++;
-      //   gameResult.teams[offense].ast++;
-      //   playerToShoot.points += 3;
-      //   playerToShoot.fga++;
-      //   playerToShoot.fgm++;
-      //   playerToShoot.threepa++;
-      //   playerToShoot.threepm++;
-      //   playerToAssist.ast++;
-      //   changePossession();
-      // } else 
       if (getRandomNumber(1000) <= playerToShoot.attr.threePercentage + (playerToShoot.attr.threePercentage * shotModifier)) {
         gameResult.teams[offense].points += 3;
         gameResult.teams[offense].fga++;
@@ -279,6 +261,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       player.stats.drb += playerToAddStatsFrom!.drb;
       player.stats.trb += playerToAddStatsFrom!.trb;
       player.stats.ast += playerToAddStatsFrom!.ast;
+      player.stats.stl += playerToAddStatsFrom!.stl;
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -300,6 +283,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     teams[i].drb += gameResult.teams[i].drb;
     teams[i].trb += gameResult.teams[i].trb;
     teams[i].ast += gameResult.teams[i].ast;
+    teams[i].stl += gameResult.teams[i].stl;
     if (i === winner) {
       teams[i].wins++;
       gameResult.winner = {
@@ -449,7 +433,7 @@ function whoAssists(team: PlayerGameStats[], playerToShoot: PlayerGameStats) {
 
   const teamPassing = team.map((player) => player.attr.passing).reduce((max, cur) => max + cur);
 
-  if (getRandomNumber(1000) < teamPassing) {
+  if (getRandomNumber(1000) <= teamPassing) {
     const rng = getRandomNumber(teamPassing);
     let min = 0;
     let max = 0;
@@ -463,6 +447,28 @@ function whoAssists(team: PlayerGameStats[], playerToShoot: PlayerGameStats) {
   }
 
   return null;
+}
+
+function checkForSteal(team: PlayerGameStats[], gameResultDefense: TeamStats) {
+  // Get the defense's total ability to steal
+  const stealTotal = team.map((player) => player.attr.stealing).reduce((max, cur) => max + cur);
+
+  if (getRandomNumber(1000) <= stealTotal) {
+    // Defense stole the ball. Find out who gets credited with the steal
+    const rng = getRandomNumber(stealTotal);
+    let min = 0;
+    let max = 0;
+    for (let i = 0; i < team.length; i++) {
+      min = max;
+      max = team[i].attr.stealing + min;
+      if (rng < max && rng >= min) {
+        team[i].stl++;
+        gameResultDefense.stl++;
+        changePossession();
+        return true;
+      }
+    }
+  } else return false;
 }
 
 export default simulate;

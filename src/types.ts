@@ -23,6 +23,7 @@ export interface Player {
   offensiveRebounding: number;
   defensiveRebounding: number;
   passing: number;
+  stealing: number;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
 }
@@ -43,6 +44,7 @@ export interface PlayerGameStats extends StatBase {
     offensiveRebounding: number;
     defensiveRebounding: number;
     passing: number;
+    stealing: number;
   };
 }
 
@@ -65,6 +67,7 @@ export interface StatBase {
   drb: number;
   trb: number;
   ast: number;
+  stl: number;
 }
 
 export type PlayerStats = {
