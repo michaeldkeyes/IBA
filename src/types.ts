@@ -27,6 +27,7 @@ export interface Player {
   blocking: number;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
+  offensiveAbility: number;
 }
 
 export interface PlayerGameStats extends StatBase {

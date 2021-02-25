@@ -167,7 +167,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
   let playersOnBench = [gameResult.teams[0].players!.slice(5, 10), gameResult.teams[1].players!.slice(5, 10)];
   //let playersInReserve = [gameResult.teams[0].players!.slice(11, gameResult.teams[0].players!.length), gameResult.teams[1].players!.slice(11, gameResult.teams[1].players!.length)]
   while (gameClock < lengthOfGame) {
-    const shotClock = getRandomNumberInRange(6,25);
+    const shotClock = getRandomNumberInRange(3,25);
     gameClock += shotClock;
 
     increaseMinutes(playersOnCourt[offense], shotClock);
@@ -186,12 +186,11 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
       fouled = true;
     }
-
-    if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
-      if (checkForBlock(playersOnCourt[defense], playerToShoot, gameResult.teams)) {
-        whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
-      }
-      else if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
+    if (checkForBlock(playersOnCourt[defense], playerToShoot, gameResult.teams)) {
+      whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
+      continue;
+    } else if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
+      if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
         gameResult.teams[offense].points += 2;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;

@@ -3,6 +3,7 @@
   <button @click="simGames(1)">Simulate Day</button>
   <button @click="simGames(7)">Simulate Week</button>
   <button @click="simGames(30)">Simulate Month</button>
+  <button @click="simGames(160)">Simulate Season</button>
   <div class="is-flex is-flex-direction-column is-align-items-center mb-6">
     <h1 class="is-size-1">{{ store.meta.season }} Season</h1>
     <h2 class="is-size-4">Day {{ store.meta.day }}</h2>
