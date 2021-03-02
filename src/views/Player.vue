@@ -93,6 +93,16 @@
       }})</span
     >
   </h4>
+  <h4>
+    Ball Handling: {{ player.ballHandling }}
+    <span>
+      ({{
+        Math.round(
+          (player.ballHandling / playerRatings[0].ballHandlingMax) * 100
+        )
+      }})
+    </span>
+  </h4>
   <h4>{{ player.offensiveAbility }}</h4>
   <h4>PER: {{ calculatePER() }}</h4>
 </template>
@@ -125,7 +135,7 @@ export default defineComponent({
       const Foul = (player!.stats.min / 60) * 0.06472 * 17.174;
       const FTMiss = (player!.stats.fta - player!.stats.ftm) * 20.091;
       const FGMiss = (player!.stats.fga - player!.stats.fgm) * 39.19;
-      const TO = (player!.stats.min / 60) * 0.0672 * 53.897;
+      const TO = player!.stats.tov * 53.897;
       const minutes = 1 / (player!.stats.min / 60);
 
       return (

@@ -22,6 +22,8 @@ export default [
     stealMax: 40,
     blockMin: 1,
     blockMax: 10,
+    ballHandlingMin: 10,
+    ballHandlingMax: 30,
   },
   {
     // SG ratings
@@ -47,6 +49,8 @@ export default [
     stealMax: 40,
     blockMin: 1,
     blockMax: 16,
+    ballHandlingMin: 1,
+    ballHandlingMax: 20,
   },
   {
     // SF ratings
@@ -72,6 +76,8 @@ export default [
     stealMax: 35,
     blockMin: 2,
     blockMax: 26,
+    ballHandlingMin: 1,
+    ballHandlingMax: 20,
   },
   {
     // PF ratings
@@ -97,6 +103,8 @@ export default [
     stealMax: 25,
     blockMin: 4,
     blockMax: 40,
+    ballHandlingMin: 1,
+    ballHandlingMax: 20,
   },
   {
     // C ratings
@@ -122,5 +130,7 @@ export default [
     stealMax: 27,
     blockMin: 24,
     blockMax: 62,
+    ballHandlingMin: 5,
+    ballHandlingMax: 25,
   },
 ];

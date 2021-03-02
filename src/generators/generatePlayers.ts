@@ -65,6 +65,10 @@ function generatePlayers(): Player[] {
           playerRatings[j % 5].stealMin,
           playerRatings[j % 5].stealMax
         ),
+        ballHandling: getRandomNumberInRange(
+          playerRatings[j % 5].ballHandlingMin,
+          playerRatings[j % 5].ballHandlingMax
+        ),
         offensiveAbility: 0,
         stats: {
           gamesPlayed: 0,
@@ -82,6 +86,7 @@ function generatePlayers(): Player[] {
           ast: 0,
           stl: 0,
           blk: 0,
+          tov: 0,
         },
       };
       player.twoRate = 1000 - player.threeRate;

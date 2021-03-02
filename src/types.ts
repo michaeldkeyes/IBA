@@ -25,6 +25,7 @@ export interface Player {
   passing: number;
   stealing: number;
   blocking: number;
+  ballHandling: number;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
   offensiveAbility: number;
@@ -48,6 +49,7 @@ export interface PlayerGameStats extends StatBase {
     passing: number;
     stealing: number;
     blocking: number;
+    ballHandling: number;
     offensiveAbility: number;
   };
 }
@@ -73,6 +75,7 @@ export interface StatBase {
   ast: number;
   stl: number;
   blk: number;
+  tov: number;
 }
 
 export type PlayerStats = {

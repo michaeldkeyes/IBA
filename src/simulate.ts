@@ -33,6 +33,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       ast: 0,
       stl: 0,
       blk: 0,
+      tov: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -46,6 +47,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         passing: player.passing,
         stealing: player.stealing,
         blocking: player.blocking,
+        ballHandling: player.ballHandling,
         offensiveAbility: player.offensiveAbility
       }
     }
@@ -69,6 +71,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       ast: 0,
       stl: 0,
       blk: 0,
+      tov: 0,
       attr: {
         scoring: player.scoring,
         twoRate: player.twoRate,
@@ -82,6 +85,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         passing: player.passing,
         stealing: player.stealing,
         blocking: player.blocking,
+        ballHandling: player.ballHandling,
         offensiveAbility: player.offensiveAbility
       }
     }
@@ -109,6 +113,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       ast: 0,
       stl: 0,
       blk: 0,
+      tov: 0,
       players: homePlayersStats
     }, {
       teamId: awayTeam.teamId,
@@ -127,6 +132,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       ast: 0,
       stl: 0,
       blk: 0,
+      tov: 0,
       players: awayPlayersStats
     }]
   }
@@ -182,7 +188,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     playersOnCourt[i].sort((a, b) => {return a.attr.offensiveAbility > b.attr.offensiveAbility ? -1 : 1});
     playersOnBench[i].sort((a, b) => {return a.attr.offensiveAbility > b.attr.offensiveAbility ? -1 : 1});
   }
-  
+
   while (gameClock < lengthOfGame) {
     const shotClock = getRandomNumberInRange(3,25);
     gameClock += shotClock;
@@ -190,11 +196,18 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     increaseMinutes(playersOnCourt[offense], shotClock);
     increaseMinutes(playersOnCourt[defense], shotClock);
 
-    const playerToShoot = whoShoots(playersOnCourt[offense]);
-    if (checkForSteal(playersOnCourt[defense], gameResult.teams[defense])) {
+    if (checkForSteal(playersOnCourt[defense], playersOnCourt[offense], gameResult.teams)) {
       continue;
     }
+
+    if (checkForTurnover(playersOnCourt[offense], gameResult.teams)) {
+      continue;
+    }
+
+    const playerToShoot = whoShoots(playersOnCourt[offense]);
+
     const playerToAssist = whoAssists(playersOnCourt[offense], playerToShoot);
+
     let shotModifier = 0;
     if (playerToAssist) {
       shotModifier = .25;
@@ -289,6 +302,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       player.stats.ast += playerToAddStatsFrom!.ast;
       player.stats.stl += playerToAddStatsFrom!.stl;
       player.stats.blk += playerToAddStatsFrom!.blk;
+      player.stats.tov += playerToAddStatsFrom!.tov;
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -312,6 +326,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     teams[i].ast += gameResult.teams[i].ast;
     teams[i].stl += gameResult.teams[i].stl;
     teams[i].blk += gameResult.teams[i].blk;
+    teams[i].tov += gameResult.teams[i].tov;
     if (i === winner) {
       teams[i].wins++;
       gameResult.winner = {
@@ -480,21 +495,33 @@ function whoAssists(team: PlayerGameStats[], playerToShoot: PlayerGameStats) {
   return null;
 }
 
-function checkForSteal(team: PlayerGameStats[], gameResultDefense: TeamStats) {
+function checkForSteal(
+  defenseTeam: PlayerGameStats[],
+  offenseTeam: PlayerGameStats[],
+  gameResultTeams: TeamStats[]
+) {
   // Get the defense's total ability to steal
-  const stealTotal = team.map((player) => player.attr.stealing).reduce((max, cur) => max + cur);
+  const stealTotal = defenseTeam
+    .map((player) => player.attr.stealing)
+    .reduce((max, cur) => max + cur);
 
   if (getRandomNumber(1000) <= stealTotal) {
+    // Find out who turned the ball over
+    const turnOverTotal = offenseTeam
+      .map((player) => player.attr.ballHandling)
+      .reduce((max, cur) => max + cur);
+    whoTurnedOver(offenseTeam, gameResultTeams, turnOverTotal);
+
     // Defense stole the ball. Find out who gets credited with the steal
     const rng = getRandomNumber(stealTotal);
     let min = 0;
     let max = 0;
-    for (let i = 0; i < team.length; i++) {
+    for (let i = 0; i < defenseTeam.length; i++) {
       min = max;
-      max = team[i].attr.stealing + min;
+      max = defenseTeam[i].attr.stealing + min;
       if (rng < max && rng >= min) {
-        team[i].stl++;
-        gameResultDefense.stl++;
+        defenseTeam[i].stl++;
+        gameResultTeams[defense].stl++;
         changePossession();
         return true;
       }
@@ -533,6 +560,39 @@ function checkForBlock(
   }
 
   return false;
+}
+
+function checkForTurnover(offenseTeam: PlayerGameStats[], gameResultTeams: TeamStats[]) {
+  const turnOverTotal = offenseTeam
+    .map((player) => player.attr.ballHandling)
+    .reduce((max, cur) => max + cur);
+
+  if (getRandomNumber(1000) <= turnOverTotal) {
+    // Offense commited a turnover. Find out who gets credited with the turnover
+    whoTurnedOver(offenseTeam, gameResultTeams, turnOverTotal);
+  }
+
+  return false;
+}
+
+function whoTurnedOver(
+  offenseTeam: PlayerGameStats[],
+  gameResultTeams: TeamStats[],
+  total: number
+) {
+  const rng = getRandomNumber(total);
+  let min = 0;
+  let max = 0;
+  for (let i = 0; i < offenseTeam.length; i++) {
+    min = max;
+    max = offenseTeam[i].attr.ballHandling + min;
+    if (rng < max && rng >= min) {
+      offenseTeam[i].tov++;
+      gameResultTeams[offense].tov++;
+      changePossession();
+      return true;
+    }
+  }
 }
 
 export default simulate;
