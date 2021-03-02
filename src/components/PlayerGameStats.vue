@@ -18,6 +18,7 @@
         <th>AST</th>
         <th>STL</th>
         <th>BLK</th>
+        <th>TOV</th>
         <th>PTS</th>
       </tr>
     </thead>
@@ -37,6 +38,7 @@
         <th>{{ team.ast }}</th>
         <th>{{ team.stl }}</th>
         <th>{{ team.blk }}</th>
+        <th>{{ team.tov }}</th>
         <th>{{ team.points }}</th>
       </tr>
       <tr>
@@ -73,6 +75,7 @@
         <td>{{ player.ast }}</td>
         <td>{{ player.stl }}</td>
         <td>{{ player.blk }}</td>
+        <td>{{ player.tov }}</td>
         <td>{{ player.points }}</td>
       </tr>
     </tbody>

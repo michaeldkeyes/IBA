@@ -212,7 +212,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     if (playerToAssist) {
       shotModifier = .25;
     }
-    
+
     let fouled = false;
 
     if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
@@ -575,6 +575,7 @@ function checkForTurnover(offenseTeam: PlayerGameStats[], gameResultTeams: TeamS
   if (getRandomNumber(1000) <= turnOverTotal) {
     // Offense commited a turnover. Find out who gets credited with the turnover
     whoTurnedOver(offenseTeam, gameResultTeams, turnOverTotal);
+    changePossession();
   }
 
   return false;
@@ -594,7 +595,6 @@ function whoTurnedOver(
     if (rng < max && rng >= min) {
       offenseTeam[i].tov++;
       gameResultTeams[offense].tov++;
-      changePossession();
       return true;
     }
   }
