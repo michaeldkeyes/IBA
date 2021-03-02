@@ -90,42 +90,12 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    // const fgm = props.players
-    //   .map((player) => player.fgm)
-    //   .reduce((max, cur) => max + cur);
-    // const fga = props.players
-    //   .map((player) => player.fga)
-    //   .reduce((max, cur) => max + cur);
-    // const threepa = props.players
-    //   .map((player) => player.threepa)
-    //   .reduce((max, cur) => max + cur);
-    // const threepm = props.players
-    //   .map((player) => player.threepm)
-    //   .reduce((max, cur) => max + cur);
-    // const ftm = props.players
-    //   .map((player) => player.ftm)
-    //   .reduce((max, cur) => max + cur);
-    // const fta = props.players
-    //   .map((player) => player.fta)
-    //   .reduce((max, cur) => max + cur);
-    // const orb = props.players
-    //   .map((player) => player.orb)
-    //   .reduce((max, cur) => max + cur);
-    // const trb = props.players
-    //   .map((player) => player.trb)
-    //   .reduce((max, cur) => max + cur);
+  setup(props) {
+    props.team.players.sort((a, b) => {
+      return a.min >= b.min ? -1 : 1;
+    });
 
-    return {
-      // fgm,
-      // fga,
-      // threepa,
-      // threepm,
-      // ftm,
-      // fta,
-      // orb,
-      // trb,
-    };
+    return {};
   },
 });
 </script>

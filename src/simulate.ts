@@ -1,6 +1,6 @@
 import { Game, Player, PlayerGameStats, TeamStats } from "./types";
 // Prettier was formatting this file very weirdly for some reason
-// prettier-ignore
+
 import { getRandomNumber, getRandomNumberInRange } from "./generators/randomNumber";
 
 const coinFlip = getRandomNumber(2);
@@ -212,14 +212,18 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
     if (playerToAssist) {
       shotModifier = .25;
     }
+    
     let fouled = false;
+
     if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
       fouled = true;
     }
-    if (checkForBlock(playersOnCourt[defense], playerToShoot, gameResult.teams)) {
-      whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
-      continue;
-    } else if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
+
+    if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
+      if (checkForBlock(playersOnCourt[defense], playerToShoot, gameResult.teams)) {
+        whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
+        continue;
+      }
       if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
         gameResult.teams[offense].points += 2;
         gameResult.teams[offense].fga++;
@@ -231,6 +235,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
           gameResult.teams[offense].ast++;
           playerToAssist.ast++
         }
+
         if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
         changePossession();
       } else {

@@ -37,13 +37,6 @@ export const useLeagueStore = defineStore({
         })
         .slice(0, 3);
     },
-    leadingThreePoints() {
-      return this.players
-        .sort((a, b) => {
-          return a.stats.threepm >= b.stats.threepm ? -1 : 1;
-        })
-        .slice(0, 1);
-    },
     leadingRebounders() {
       return this.players
         .filter((player) => player.stats.gamesPlayed! > 0)

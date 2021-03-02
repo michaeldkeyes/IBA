@@ -10,9 +10,9 @@
         </p>
       </div>
     </div>
-    <div class="block" v-if="store.leadingThreePoints[0].stats.threepa !== 0">
-      <strong class="is-size-5">Leading Three Point Shooter</strong>
-      <div v-for="player in store.leadingThreePoints" :key="player.playerId">
+    <div class="block" v-if="leadingThreePoints.length !== 0">
+      <strong class="is-size-5">Leading Three Point Shooters</strong>
+      <div v-for="player in leadingThreePoints" :key="player.playerId">
         <h5>
           {{ store.teams.find((team) => team.teamId === player.teamId).city }}
           {{ player.first + " " + player.last }}
@@ -73,6 +73,16 @@ import { useLeagueStore } from "../store/index";
 export default defineComponent({
   setup() {
     const store = useLeagueStore();
+
+    const leadingThreePoints = computed(() => {
+      return store.players
+        .filter((player) => player.stats.gamesPlayed! > 0)
+        .sort((a, b) => {
+          return a.stats.threepm >= b.stats.threepm ? -1 : 1;
+        })
+        .slice(0, 3);
+    });
+
     const leadingPassers = computed(() => {
       return store.players
         .filter((player) => player.stats.gamesPlayed! > 0)
@@ -109,6 +119,7 @@ export default defineComponent({
 
     return {
       store,
+      leadingThreePoints,
       leadingPassers,
       stealsLeaders,
       blocksLeaders,
