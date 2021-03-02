@@ -37,7 +37,14 @@
     Free Throw Shooting: {{ player.freePercentage }}
     <span>({{ Math.round((player.freePercentage / 925) * 100) }})</span>
   </h4>
-  <h4>Free Throw Rate: {{ player.freeRate }}</h4>
+  <h4>
+    Free Throw Rate: {{ player.freeRate }}
+    <span
+      >({{
+        Math.round((player.freeRate / playerRatings[4].freeRateMax) * 100)
+      }})</span
+    >
+  </h4>
   <h4>
     Offensive Rebounding: {{ player.offensiveRebounding }}
     <span
@@ -87,6 +94,7 @@
     >
   </h4>
   <h4>{{ player.offensiveAbility }}</h4>
+  <h4>PER: {{ calculatePER() }}</h4>
 </template>
 
 <script lang="ts">
@@ -105,10 +113,43 @@ export default defineComponent({
       ({ playerId }) => playerId === parseInt(props.playerId)
     );
 
+    const calculatePER = () => {
+      const FGM = player!.stats.fgm * 85.91;
+      const Steals = player!.stats.stl * 53.897;
+      const ThreePTM = player!.stats.threepm * 51.757;
+      const FTM = player!.stats.ftm * 46.845;
+      const Blocks = player!.stats.blk * 39.19;
+      const OffensiveReb = player!.stats.orb * 39.19;
+      const Assists = player!.stats.ast * 34.677;
+      const DefensiveReb = player!.stats.drb * 14.707;
+      const Foul = (player!.stats.min / 60) * 0.06472 * 17.174;
+      const FTMiss = (player!.stats.fta - player!.stats.ftm) * 20.091;
+      const FGMiss = (player!.stats.fga - player!.stats.fgm) * 39.19;
+      const TO = (player!.stats.min / 60) * 0.0672 * 53.897;
+      const minutes = 1 / (player!.stats.min / 60);
+
+      return (
+        (FGM +
+          Steals +
+          ThreePTM +
+          FTM +
+          Blocks +
+          OffensiveReb +
+          Assists +
+          DefensiveReb -
+          Foul -
+          FTMiss -
+          FGMiss -
+          TO) *
+        minutes
+      ).toFixed(1);
+    };
+
     return {
       store,
       player,
       playerRatings,
+      calculatePER,
     };
   },
 });

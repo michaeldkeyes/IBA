@@ -3,7 +3,7 @@
   <button @click="simGames(1)">Simulate Day</button>
   <button @click="simGames(7)">Simulate Week</button>
   <button @click="simGames(30)">Simulate Month</button>
-  <button @click="simGames(160)">Simulate Season</button>
+  <button @click="simGames(163)">Simulate Season</button>
   <div class="is-flex is-flex-direction-column is-align-items-center mb-6">
     <h1 class="is-size-1">{{ store.meta.season }} Season</h1>
     <h2 class="is-size-4">Day {{ store.meta.day }}</h2>
@@ -79,14 +79,14 @@ export default defineComponent({
         gamesToSim.map((game) => {
           const homePlayers = store.players
             .filter((player) => player.teamId === game.homeTeamId)
-            .sort(function (a, b) {
-              return a.scoring > b.scoring ? -1 : 1;
+            .sort((a, b) => {
+              return a.offensiveAbility > b.offensiveAbility ? -1 : 1;
             });
           const homeTeam = store.teamStats[game.homeTeamId];
           const awayPlayers = store.players
             .filter((player) => player.teamId === game.awayTeamId)
-            .sort(function (a, b) {
-              return a.scoring > b.scoring ? -1 : 1;
+            .sort((a, b) => {
+              return a.offensiveAbility > b.offensiveAbility ? -1 : 1;
             });
           const awayTeam = store.teamStats[game.awayTeamId];
 

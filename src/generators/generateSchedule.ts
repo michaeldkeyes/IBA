@@ -58,9 +58,7 @@ function generateGames(): Schedule[] {
       // Filter the teams that have been selected the least so far
       do {
         gamesPicked++;
-        teamsToPlayAgainst = filteredTeams.filter(
-          (team) => timesChosen[team.teamId] < gamesPicked
-        );
+        teamsToPlayAgainst = filteredTeams.filter((team) => timesChosen[team.teamId] < gamesPicked);
       } while (teamsToPlayAgainst.length === 0);
 
       // Find a random opponent
@@ -101,10 +99,12 @@ function generateGames(): Schedule[] {
 function generateSchedule(): Schedule[] {
   let schedule: Schedule[][] = [];
   let games = generateGames();
+
   while (games.length > 0) {
     // The league will play 8 games a day
     let gameDay: Schedule[] = [];
     let iters = 0;
+
     while (gameDay.length < 8 && games.length > 0) {
       const rng = getRandomNumber(games.length);
       let good = true;
@@ -113,26 +113,33 @@ function generateSchedule(): Schedule[] {
         homeTeamId: gameFound[0].homeTeamId,
         awayTeamId: gameFound[0].awayTeamId,
       };
-      for (let i = 0; i < gameDay.length; i++) {
-        if (
-          gameDay[i].homeTeamId === temp.homeTeamId ||
-          gameDay[i].homeTeamId === temp.awayTeamId ||
-          gameDay[i].awayTeamId === temp.homeTeamId ||
-          gameDay[i].awayTeamId === temp.awayTeamId
-        ) {
-          // Return the game
-          games.push(temp);
-          good = false;
-          break;
+
+      // Teams can only play once per day. Check to see if any of the two teams are playing already
+      if (good) {
+        for (let i = 0; i < gameDay.length; i++) {
+          if (
+            gameDay[i].homeTeamId === temp.homeTeamId ||
+            gameDay[i].homeTeamId === temp.awayTeamId ||
+            gameDay[i].awayTeamId === temp.homeTeamId ||
+            gameDay[i].awayTeamId === temp.awayTeamId
+          ) {
+            // Return the game
+            games.push(temp);
+            good = false;
+            break;
+          }
         }
       }
+
       iters++;
       // Towards the end the algorithm can get stuck trying to find a game
       if (iters === 50) {
         break;
       }
+
       // We need to assign what day of the season this game will be played
       if (good) {
+        iters++;
         temp.day = schedule.length + 1;
         gameDay.push(temp);
       }

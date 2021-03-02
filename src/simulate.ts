@@ -46,6 +46,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         passing: player.passing,
         stealing: player.stealing,
         blocking: player.blocking,
+        offensiveAbility: player.offensiveAbility
       }
     }
   })
@@ -80,7 +81,8 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         defensiveRebounding: player.defensiveRebounding,
         passing: player.passing,
         stealing: player.stealing,
-        blocking: player.blocking
+        blocking: player.blocking,
+        offensiveAbility: player.offensiveAbility
       }
     }
   })
@@ -158,14 +160,29 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       substitutionTimes[i].time.push(getRandomNumberInRange(minValue, maxValue));
     }
   }
+
+  // We want one of each position to start the game. This makes for a more realistic simulation I think.
+  let playersOnCourt: PlayerGameStats[][] = [[], []]
+  let playersOnBench: PlayerGameStats[][] = [[], []];
+  const positions = ["PG", "SG", "SF", "PF", "C"];
+  for (let i = 0; i < gameResult.teams.length; i++) {
+    let gameResultTeamsCopy = [...gameResult.teams[i].players];
+    for (let j = 0; j < positions.length; j++) {
+      const player = gameResultTeamsCopy.find(player => player.pos === positions[j]);
+      const index = gameResultTeamsCopy.indexOf(player!);
+      playersOnCourt[i].push(player!);
+      gameResultTeamsCopy.splice(index, 1);
+    }
+    for (let k = 0; k < positions.length; k++) {
+      const player = gameResultTeamsCopy.find(player => player.pos === positions[k]);
+      const index = gameResultTeamsCopy.indexOf(player!);
+      playersOnBench[i].push(player!);
+      gameResultTeamsCopy.splice(index, 1);
+    }
+    playersOnCourt[i].sort((a, b) => {return a.attr.offensiveAbility > b.attr.offensiveAbility ? -1 : 1});
+    playersOnBench[i].sort((a, b) => {return a.attr.offensiveAbility > b.attr.offensiveAbility ? -1 : 1});
+  }
   
-  
-
-
-
-  let playersOnCourt = [gameResult.teams[0].players!.slice(0, 5), gameResult.teams[1].players!.slice(0, 5)]
-  let playersOnBench = [gameResult.teams[0].players!.slice(5, 10), gameResult.teams[1].players!.slice(5, 10)];
-  //let playersInReserve = [gameResult.teams[0].players!.slice(11, gameResult.teams[0].players!.length), gameResult.teams[1].players!.slice(11, gameResult.teams[1].players!.length)]
   while (gameClock < lengthOfGame) {
     const shotClock = getRandomNumberInRange(3,25);
     gameClock += shotClock;

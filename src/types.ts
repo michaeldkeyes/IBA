@@ -48,6 +48,7 @@ export interface PlayerGameStats extends StatBase {
     passing: number;
     stealing: number;
     blocking: number;
+    offensiveAbility: number;
   };
 }
 
