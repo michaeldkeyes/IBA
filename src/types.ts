@@ -35,6 +35,7 @@ export interface PlayerGameStats extends StatBase {
   playerId: number;
   name: string;
   min: number;
+  minutesToPlayThisQuarter: number;
   pos: string;
   attr: {
     scoring: number;

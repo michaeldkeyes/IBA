@@ -1,5 +1,4 @@
 import { Game, Player, PlayerGameStats, TeamStats } from "./types";
-// Prettier was formatting this file very weirdly for some reason
 
 import { getRandomNumber, getRandomNumberInRange } from "./generators/randomNumber";
 
@@ -7,17 +6,24 @@ const coinFlip = getRandomNumber(2);
 let offense = coinFlip;
 let defense = offense === 0 ? 1 : 0;
 
-//prettier-ignore
-function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Player[], awayTeam: TeamStats) {
-  let lengthOfGame = 2880;
+function simulate(
+  homePlayers: Player[],
+  homeTeam: TeamStats,
+  awayPlayers: Player[],
+  awayTeam: TeamStats
+) {
+  let lengthOfQuarter = 720;
+  const numQuarters = 4;
+  let gameOver = false;
+  let currentQuarter = 1;
   let gameClock = 0;
   let players = [homePlayers, awayPlayers];
   let teams: TeamStats[] = [homeTeam, awayTeam];
 
-  let homePlayersStats: PlayerGameStats[] = homePlayers.map(player => {
+  let homePlayersStats: PlayerGameStats[] = homePlayers.map((player) => {
     return {
       playerId: player.playerId!,
-      name: player.first +  ' ' + player.last,
+      name: player.first + " " + player.last,
       pos: player.position,
       points: 0,
       fga: 0,
@@ -27,6 +33,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       fta: 0,
       ftm: 0,
       min: 0,
+      minutesToPlayThisQuarter: 0,
       orb: 0,
       drb: 0,
       trb: 0,
@@ -48,14 +55,14 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         stealing: player.stealing,
         blocking: player.blocking,
         ballHandling: player.ballHandling,
-        offensiveAbility: player.offensiveAbility
-      }
-    }
-  })
-  let awayPlayersStats: PlayerGameStats[] = awayPlayers.map(player => {
+        offensiveAbility: player.offensiveAbility,
+      },
+    };
+  });
+  let awayPlayersStats: PlayerGameStats[] = awayPlayers.map((player) => {
     return {
       playerId: player.playerId!,
-      name: player.first +  ' ' + player.last,
+      name: player.first + " " + player.last,
       pos: player.position,
       points: 0,
       fga: 0,
@@ -65,6 +72,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       fta: 0,
       ftm: 0,
       min: 0,
+      minutesToPlayThisQuarter: 0,
       orb: 0,
       drb: 0,
       trb: 0,
@@ -86,111 +94,75 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         stealing: player.stealing,
         blocking: player.blocking,
         ballHandling: player.ballHandling,
-        offensiveAbility: player.offensiveAbility
-      }
-    }
-  })
-
+        offensiveAbility: player.offensiveAbility,
+      },
+    };
+  });
 
   let gameResult: Game = {
-    loser: {points: 0, teamId: 99},
-    winner: {points: 0, teamId: 99},
+    loser: { points: 0, teamId: 99 },
+    winner: { points: 0, teamId: 99 },
     overtimes: 0,
-    teams: [{
-      teamId: homeTeam.teamId,
-      losses: homeTeam.losses,
-      wins: homeTeam.wins,
-      points: 0,
-      fga: 0,
-      fgm: 0,
-      threepa: 0,
-      threepm: 0,
-      fta: 0,
-      ftm: 0,
-      orb: 0,
-      drb: 0,
-      trb: 0,
-      ast: 0,
-      stl: 0,
-      blk: 0,
-      tov: 0,
-      players: homePlayersStats
-    }, {
-      teamId: awayTeam.teamId,
-      losses: awayTeam.losses,
-      wins: awayTeam.wins,
-      points: 0,
-      fga: 0,
-      fgm: 0,
-      threepa: 0,
-      threepm: 0,
-      fta: 0,
-      ftm: 0,
-      orb: 0,
-      drb: 0,
-      trb: 0,
-      ast: 0,
-      stl: 0,
-      blk: 0,
-      tov: 0,
-      players: awayPlayersStats
-    }]
-  }
+    teams: [
+      {
+        teamId: homeTeam.teamId,
+        losses: homeTeam.losses,
+        wins: homeTeam.wins,
+        points: 0,
+        fga: 0,
+        fgm: 0,
+        threepa: 0,
+        threepm: 0,
+        fta: 0,
+        ftm: 0,
+        orb: 0,
+        drb: 0,
+        trb: 0,
+        ast: 0,
+        stl: 0,
+        blk: 0,
+        tov: 0,
+        players: homePlayersStats,
+      },
+      {
+        teamId: awayTeam.teamId,
+        losses: awayTeam.losses,
+        wins: awayTeam.wins,
+        points: 0,
+        fga: 0,
+        fgm: 0,
+        threepa: 0,
+        threepm: 0,
+        fta: 0,
+        ftm: 0,
+        orb: 0,
+        drb: 0,
+        trb: 0,
+        ast: 0,
+        stl: 0,
+        blk: 0,
+        tov: 0,
+        players: awayPlayersStats,
+      },
+    ],
+  };
 
-  let substitutionTimes = [{time: [getRandomNumberInRange(450, 510)], numSubs: 0}, {time: [getRandomNumberInRange(450, 510)], numSubs: 0}];
+  setPlayingTimes(lengthOfQuarter, gameResult.teams[0].players);
+  setPlayingTimes(lengthOfQuarter, gameResult.teams[1].players);
 
-  for (let i = 0; i < substitutionTimes.length; i++) {
-    for (let j = 1; j < 20; j++) {
-      let minValue: number;
-      let maxValue: number;
-      if (j === 5) {
-        minValue = substitutionTimes[i].time[j-1] + 330;
-        maxValue = substitutionTimes[i].time[j-1] + 390;
-      } else if (j > 5 && j < 10) {
-        minValue = substitutionTimes[i].time[j-1] + 15;
-        maxValue = substitutionTimes[i].time[j-1] + 45;
-      } else if (j === 10) {
-        minValue = substitutionTimes[i].time[j-1] + 450;
-        maxValue = substitutionTimes[i].time[j-1] + 510;
-      } else if (j > 10 && j < 15) {
-        minValue = substitutionTimes[i].time[j-1] + 15;
-        maxValue = substitutionTimes[i].time[j-1] + 45;
-      } else if (j === 15) {
-        minValue = substitutionTimes[i].time[j-1] + 330;
-        maxValue = substitutionTimes[i].time[j-1] + 390;
-      } else {
-        minValue = substitutionTimes[i].time[j-1] + 30;
-        maxValue = substitutionTimes[i].time[j-1] + 90;
-      }
+  let playersOnCourt = [
+    gameResult.teams[0].players!.slice(0, 5),
+    gameResult.teams[1].players!.slice(0, 5),
+  ];
+  let playersOnBench = [
+    gameResult.teams[0].players!.slice(5, 10),
+    gameResult.teams[1].players!.slice(5, 10),
+  ];
+  //let playersInReserve = [gameResult.teams[0].players!.slice(11, gameResult.teams[0].players!.length), gameResult.teams[1].players!.slice(11, gameResult.teams[1].players!.length)]
 
-      substitutionTimes[i].time.push(getRandomNumberInRange(minValue, maxValue));
-    }
-  }
-
-  // We want one of each position to start the game. This makes for a more realistic simulation I think.
-  let playersOnCourt: PlayerGameStats[][] = [[], []]
-  let playersOnBench: PlayerGameStats[][] = [[], []];
-  const positions = ["PG", "SG", "SF", "PF", "C"];
-  for (let i = 0; i < gameResult.teams.length; i++) {
-    let gameResultTeamsCopy = [...gameResult.teams[i].players];
-    for (let j = 0; j < positions.length; j++) {
-      const player = gameResultTeamsCopy.find(player => player.pos === positions[j]);
-      const index = gameResultTeamsCopy.indexOf(player!);
-      playersOnCourt[i].push(player!);
-      gameResultTeamsCopy.splice(index, 1);
-    }
-    for (let k = 0; k < positions.length; k++) {
-      const player = gameResultTeamsCopy.find(player => player.pos === positions[k]);
-      const index = gameResultTeamsCopy.indexOf(player!);
-      playersOnBench[i].push(player!);
-      gameResultTeamsCopy.splice(index, 1);
-    }
-    playersOnCourt[i].sort((a, b) => {return a.attr.offensiveAbility > b.attr.offensiveAbility ? -1 : 1});
-    playersOnBench[i].sort((a, b) => {return a.attr.offensiveAbility > b.attr.offensiveAbility ? -1 : 1});
-  }
-
-  while (gameClock < lengthOfGame) {
-    const shotClock = getRandomNumberInRange(3,25);
+  // Actual game simulation starts here
+  while (!gameOver) {
+    const shotClock = getRandomNumberInRange(3, 25);
     gameClock += shotClock;
 
     increaseMinutes(playersOnCourt[offense], shotClock);
@@ -210,7 +182,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
 
     let shotModifier = 0;
     if (playerToAssist) {
-      shotModifier = .25;
+      shotModifier = 0.25;
     }
 
     let fouled = false;
@@ -224,7 +196,11 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
         continue;
       }
-      if (getRandomNumber(1000) <= playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)) {
+      if (
+        getRandomNumber(1000) <=
+        playerToShoot.attr.twoPercentage +
+          Math.round(playerToShoot.attr.twoPercentage * shotModifier)
+      ) {
         gameResult.teams[offense].points += 2;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;
@@ -233,7 +209,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         playerToShoot!.fgm++;
         if (playerToAssist) {
           gameResult.teams[offense].ast++;
-          playerToAssist.ast++
+          playerToAssist.ast++;
         }
 
         if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
@@ -241,7 +217,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       } else {
         if (fouled) {
           shootFreeThrows(playerToShoot, 2, gameResult.teams[offense]);
-          changePossession()
+          changePossession();
         } else {
           gameResult.teams[offense].fga++;
           playerToShoot!.fga++;
@@ -249,7 +225,10 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         }
       }
     } else {
-      if (getRandomNumber(1000) <= playerToShoot.attr.threePercentage + (playerToShoot.attr.threePercentage * shotModifier)) {
+      if (
+        getRandomNumber(1000) <=
+        playerToShoot.attr.threePercentage + playerToShoot.attr.threePercentage * shotModifier
+      ) {
         gameResult.teams[offense].points += 3;
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].fgm++;
@@ -270,29 +249,54 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
         gameResult.teams[offense].fga++;
         gameResult.teams[offense].threepa++;
         playerToShoot!.fga++;
-        playerToShoot!.threepa++
+        playerToShoot!.threepa++;
         whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
       }
     }
 
-    if (substitutionTimes[offense].time[0] < gameClock) {
-      substitutePlayers(playersOnCourt[offense], playersOnBench[offense], substitutionTimes[offense])
-    }
-    if (substitutionTimes[defense].time[0] < gameClock) {
-      substitutePlayers(playersOnCourt[defense], playersOnBench[defense], substitutionTimes[defense]);
+    playersOnCourt[0].map((player) => {
+      if (player.minutesToPlayThisQuarter <= 0) {
+        substitutePlayers(playersOnCourt[0], playersOnBench[0]);
+      }
+    });
+    playersOnCourt[1].map((player) => {
+      if (player.minutesToPlayThisQuarter <= 0) {
+        substitutePlayers(playersOnCourt[1], playersOnBench[1]);
+      }
+    });
+
+    if (gameClock >= lengthOfQuarter) {
+      currentQuarter++;
     }
 
-    if (gameClock >= lengthOfGame && gameResult.teams[0].points === gameResult.teams[1].points) {
+    if (
+      gameClock >= lengthOfQuarter &&
+      currentQuarter > numQuarters &&
+      gameResult.teams[0].points !== gameResult.teams[1].points
+    ) {
+      gameOver = true;
+    } else if (
+      gameClock >= lengthOfQuarter &&
+      currentQuarter > numQuarters &&
+      gameResult.teams[0].points === gameResult.teams[1].points
+    ) {
       gameResult.overtimes++;
-      lengthOfGame = 300;
+      lengthOfQuarter = 300;
       gameClock = 0;
+      console.log("Overtime!");
+    } else if (gameClock >= lengthOfQuarter) {
+      gameClock = 0;
+      setPlayingTimes(lengthOfQuarter - gameClock, gameResult.teams[0].players);
+      setPlayingTimes(lengthOfQuarter - gameClock, gameResult.teams[1].players);
     }
   }
 
   // Add the players game stats to their season stats
   for (let i = 0; i < players.length; i++) {
-    players[i].forEach(player => {
-      let playerToAddStatsFrom = gameResult.teams[i].players.find(player2 => player.playerId === player2.playerId);
+    players[i].map((player) => {
+      let playerToAddStatsFrom = gameResult.teams[i].players.find(
+        (player2) => player.playerId === player2.playerId
+      );
       player.stats.fga += playerToAddStatsFrom!.fga;
       player.stats.fgm += playerToAddStatsFrom!.fgm;
       player.stats.min += playerToAddStatsFrom!.min;
@@ -311,7 +315,7 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
-    })
+    });
   }
 
   const winner = gameResult.teams[0].points > gameResult.teams[1].points ? 0 : 1;
@@ -336,14 +340,14 @@ function simulate(homePlayers: Player[], homeTeam: TeamStats, awayPlayers: Playe
       teams[i].wins++;
       gameResult.winner = {
         points: gameResult.teams[i].points,
-        teamId: gameResult.teams[i].teamId!
-      }
+        teamId: gameResult.teams[i].teamId!,
+      };
     } else {
       teams[i].losses++;
       gameResult.loser = {
         points: gameResult.teams[i].points,
-        teamId: gameResult.teams[i].teamId!
-      }
+        teamId: gameResult.teams[i].teamId!,
+      };
     }
   }
 
@@ -354,33 +358,53 @@ function changePossession() {
   let temp = offense;
   offense = defense;
   defense = temp;
-
-  // offense = 0 ? 1 : 0;
-  // defense = 1 ? 0 : 1;
 }
 
 function increaseMinutes(players: PlayerGameStats[], count: number) {
   return players.map((player) => {
     player.min += count;
+    player.minutesToPlayThisQuarter -= count;
   });
 }
 
-function substitutePlayers(
-  playersOnCourt: PlayerGameStats[],
-  playersOnBench: PlayerGameStats[],
-  substitutionTimes: { time: number[]; numSubs: number }
-) {
+function substitutePlayers(playersOnCourt: PlayerGameStats[], playersOnBench: PlayerGameStats[]) {
   const playerSubbingOut = playersOnCourt.pop();
   const playerSubbingIn = playersOnBench.shift();
   playersOnCourt.unshift(playerSubbingIn!);
   playersOnBench.push(playerSubbingOut!);
+}
 
-  substitutionTimes.time.shift();
-  substitutionTimes.numSubs++;
-  if (substitutionTimes.numSubs % 5 === 0) {
-    playersOnCourt.reverse();
-    playersOnBench.reverse();
+// Sets the playing time for each player by quarter
+function setPlayingTimes(timeRemaining: number, players: PlayerGameStats[]) {
+  // timeRemaining is the time left in the quarter. There's 5 players on the floor at any time so we multiply by 5 to get the total number of seconds to distribute
+  let timeAvailable = timeRemaining * 5;
+
+  // We want to randomly assign playing time based on a players position on the depth chart. The following was calculated that the time for the best player on a team will play on average 9 minutes per quarter
+  let maxTime = Math.floor(timeRemaining * 0.8125);
+  let minTime = Math.floor(timeRemaining * 0.6875);
+  const timeReducer = timeRemaining * 0.0625;
+
+  // Go through every player and assign minutes. maxTime and minTime get reduced every iteration so players get less play time the further down the depth chart they are
+  for (let i = 0; i < players.length; i++) {
+    let minutesToPlayThisQuarter = getRandomNumberInRange(minTime, maxTime);
+
+    if (minutesToPlayThisQuarter < timeAvailable) {
+      timeAvailable -= minutesToPlayThisQuarter;
+      players[i].minutesToPlayThisQuarter = minutesToPlayThisQuarter;
+      // The 5th and 6th players on the roster get roughly the same amount of playing time, so we don't lower the time
+      if (i !== 4) {
+        maxTime -= timeReducer;
+        minTime -= timeReducer;
+      }
+    } else if (minutesToPlayThisQuarter > timeAvailable) {
+      players[i].minutesToPlayThisQuarter = timeAvailable;
+      timeAvailable = 0;
+      return;
+    }
   }
+
+  // If there is still time available somehow after going through the roster then we just give the remaining time to the star player
+  if (timeAvailable > 0) players[0].minutesToPlayThisQuarter += timeAvailable;
 }
 
 function whoShoots(playersOnCourt: PlayerGameStats[]) {
