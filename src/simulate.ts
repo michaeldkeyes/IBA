@@ -18,7 +18,7 @@ function simulate(
   let currentQuarter = 1;
   let gameClock = 0;
   let players = [homePlayers, awayPlayers];
-  let teams: TeamStats[] = [homeTeam, awayTeam];
+  let teams = [homeTeam, awayTeam];
 
   let playerStats: PlayerGameStats[][] = players.map((team) => {
     return team.map((player) => {
@@ -62,52 +62,34 @@ function simulate(
     });
   });
 
+  let teamStats: TeamStats[] = teams.map((team, index) => {
+    return {
+      teamId: team.teamId,
+      losses: team.losses,
+      wins: team.wins,
+      points: 0,
+      fga: 0,
+      fgm: 0,
+      threepa: 0,
+      threepm: 0,
+      fta: 0,
+      ftm: 0,
+      orb: 0,
+      drb: 0,
+      trb: 0,
+      ast: 0,
+      stl: 0,
+      blk: 0,
+      tov: 0,
+      players: playerStats[index],
+    };
+  });
+
   let gameResult: Game = {
     loser: { points: 0, teamId: 99 },
     winner: { points: 0, teamId: 99 },
     overtimes: 0,
-    teams: [
-      {
-        teamId: homeTeam.teamId,
-        losses: homeTeam.losses,
-        wins: homeTeam.wins,
-        points: 0,
-        fga: 0,
-        fgm: 0,
-        threepa: 0,
-        threepm: 0,
-        fta: 0,
-        ftm: 0,
-        orb: 0,
-        drb: 0,
-        trb: 0,
-        ast: 0,
-        stl: 0,
-        blk: 0,
-        tov: 0,
-        players: playerStats[0],
-      },
-      {
-        teamId: awayTeam.teamId,
-        losses: awayTeam.losses,
-        wins: awayTeam.wins,
-        points: 0,
-        fga: 0,
-        fgm: 0,
-        threepa: 0,
-        threepm: 0,
-        fta: 0,
-        ftm: 0,
-        orb: 0,
-        drb: 0,
-        trb: 0,
-        ast: 0,
-        stl: 0,
-        blk: 0,
-        tov: 0,
-        players: playerStats[1],
-      },
-    ],
+    teams: [teamStats[0], teamStats[1]],
   };
 
   setPlayingTimes(lengthOfQuarter, gameResult.teams[0].players);
