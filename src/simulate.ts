@@ -162,97 +162,17 @@ function simulate(
 
   // Actual game simulation starts here
   while (!gameOver) {
-    const shotClock = getRandomNumberInRange(3, 25);
+    let shotClock = getRandomNumberInRange(3, 25);
     gameClock += shotClock;
+    if (gameClock > lengthOfQuarter) {
+      gameClock = lengthOfQuarter;
+      shotClock = gameClock - lengthOfQuarter;
+    }
 
     increaseMinutes(playersOnCourt[offense], shotClock);
     increaseMinutes(playersOnCourt[defense], shotClock);
 
-    if (checkForSteal(playersOnCourt[defense], playersOnCourt[offense], gameResult.teams)) {
-      continue;
-    }
-
-    if (checkForTurnover(playersOnCourt[offense], gameResult.teams)) {
-      continue;
-    }
-
-    const playerToShoot = whoShoots(playersOnCourt[offense]);
-
-    const playerToAssist = whoAssists(playersOnCourt[offense], playerToShoot);
-
-    let shotModifier = 0;
-    if (playerToAssist) {
-      shotModifier = 0.25;
-    }
-
-    let fouled = false;
-
-    if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
-      fouled = true;
-    }
-
-    if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
-      if (checkForBlock(playersOnCourt[defense], playerToShoot, gameResult.teams)) {
-        whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
-        continue;
-      }
-      if (
-        getRandomNumber(1000) <=
-        playerToShoot.attr.twoPercentage +
-          Math.round(playerToShoot.attr.twoPercentage * shotModifier)
-      ) {
-        gameResult.teams[offense].points += 2;
-        gameResult.teams[offense].fga++;
-        gameResult.teams[offense].fgm++;
-        playerToShoot!.points += 2;
-        playerToShoot!.fga++;
-        playerToShoot!.fgm++;
-        if (playerToAssist) {
-          gameResult.teams[offense].ast++;
-          playerToAssist.ast++;
-        }
-
-        if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
-        changePossession();
-      } else {
-        if (fouled) {
-          shootFreeThrows(playerToShoot, 2, gameResult.teams[offense]);
-          changePossession();
-        } else {
-          gameResult.teams[offense].fga++;
-          playerToShoot!.fga++;
-          whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
-        }
-      }
-    } else {
-      if (
-        getRandomNumber(1000) <=
-        playerToShoot.attr.threePercentage + playerToShoot.attr.threePercentage * shotModifier
-      ) {
-        gameResult.teams[offense].points += 3;
-        gameResult.teams[offense].fga++;
-        gameResult.teams[offense].fgm++;
-        gameResult.teams[offense].threepa++;
-        gameResult.teams[offense].threepm++;
-        playerToShoot!.points += 3;
-        playerToShoot!.fga++;
-        playerToShoot!.fgm++;
-        playerToShoot!.threepa++;
-        playerToShoot!.threepm++;
-        if (playerToAssist) {
-          gameResult.teams[offense].ast++;
-          playerToAssist.ast++;
-        }
-        if (fouled) shootFreeThrows(playerToShoot, 1, gameResult.teams[offense]);
-        changePossession();
-      } else {
-        gameResult.teams[offense].fga++;
-        gameResult.teams[offense].threepa++;
-        playerToShoot!.fga++;
-        playerToShoot!.threepa++;
-        whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], gameResult.teams);
-      }
-    }
+    simPossession(playersOnCourt, gameResult.teams);
 
     playersOnCourt[0].map((player) => {
       if (player.minutesToPlayThisQuarter <= 0) {
@@ -620,6 +540,93 @@ function whoTurnedOver(
       offenseTeam[i].tov++;
       gameResultTeams[offense].tov++;
       return true;
+    }
+  }
+}
+
+function simPossession(playersOnCourt: PlayerGameStats[][], teams: TeamStats[]) {
+  if (checkForSteal(playersOnCourt[defense], playersOnCourt[offense], teams)) {
+    return;
+  }
+
+  if (checkForTurnover(playersOnCourt[offense], teams)) {
+    return;
+  }
+
+  const playerToShoot = whoShoots(playersOnCourt[offense]);
+
+  const playerToAssist = whoAssists(playersOnCourt[offense], playerToShoot);
+
+  let shotModifier = 0;
+  if (playerToAssist) {
+    shotModifier = 0.25;
+  }
+
+  let fouled = false;
+
+  if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
+    fouled = true;
+  }
+
+  if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
+    if (checkForBlock(playersOnCourt[defense], playerToShoot, teams)) {
+      whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], teams);
+      return;
+    }
+    if (
+      getRandomNumber(1000) <=
+      playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)
+    ) {
+      teams[offense].points += 2;
+      teams[offense].fga++;
+      teams[offense].fgm++;
+      playerToShoot!.points += 2;
+      playerToShoot!.fga++;
+      playerToShoot!.fgm++;
+      if (playerToAssist) {
+        teams[offense].ast++;
+        playerToAssist.ast++;
+      }
+
+      if (fouled) shootFreeThrows(playerToShoot, 1, teams[offense]);
+      changePossession();
+    } else {
+      if (fouled) {
+        shootFreeThrows(playerToShoot, 2, teams[offense]);
+        changePossession();
+      } else {
+        teams[offense].fga++;
+        playerToShoot!.fga++;
+        whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], teams);
+      }
+    }
+  } else {
+    if (
+      getRandomNumber(1000) <=
+      playerToShoot.attr.threePercentage + playerToShoot.attr.threePercentage * shotModifier
+    ) {
+      teams[offense].points += 3;
+      teams[offense].fga++;
+      teams[offense].fgm++;
+      teams[offense].threepa++;
+      teams[offense].threepm++;
+      playerToShoot!.points += 3;
+      playerToShoot!.fga++;
+      playerToShoot!.fgm++;
+      playerToShoot!.threepa++;
+      playerToShoot!.threepm++;
+      if (playerToAssist) {
+        teams[offense].ast++;
+        playerToAssist.ast++;
+      }
+      if (fouled) shootFreeThrows(playerToShoot, 1, teams[offense]);
+      changePossession();
+    } else {
+      teams[offense].fga++;
+      teams[offense].threepa++;
+      playerToShoot!.fga++;
+      playerToShoot!.threepa++;
+      whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], teams);
     }
   }
 }
