@@ -13,6 +13,47 @@
       <div>{{ game.teams[1].points }}</div>
     </div>
   </div>
+
+  <div>
+    <table class="table is-bordered">
+      <thead>
+        <tr>
+          <th></th>
+          <th v-for="index in game.teams[0].ptsPerQuarter.length">
+            {{ index }}
+          </th>
+          <th>F</th>
+          <th>eFG%</th>
+          <th>TOV%</th>
+          <th>ORB%</th>
+          <th>FT/FGA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="team in game.teams" :key="team.teamId">
+          <td>
+            {{ team.abbrev }}
+          </td>
+          <td v-for="(points, index) in team.ptsPerQuarter" :key="index">
+            {{ points }}
+          </td>
+          <td>{{ team.points }}</td>
+          <td>{{ ((team.fgm + 0.5 * team.threepm) / team.fga).toFixed(3) }}</td>
+          <td>
+            {{
+              (
+                (100 * team.tov) /
+                (team.fga + 0.44 * team.fta + team.tov)
+              ).toFixed(1)
+            }}
+          </td>
+          <td>{{ team.orb }}</td>
+          <td>{{ (team.ftm / team.fga).toFixed(3) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="mb-6">
     <router-link
       class="is-size-4"

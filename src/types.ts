@@ -87,6 +87,7 @@ export type PlayerStats = {
 export type Team = {
   teamId: number;
   name: string;
+  abbrev: string;
   conference: string;
   city: string;
   division: string;
@@ -94,9 +95,12 @@ export type Team = {
 
 export interface TeamStats extends StatBase {
   teamId?: number;
+  abbrev?: string;
   wins: number;
   losses: number;
-  players: PlayerGameStats[];
+  ptsThisQuarter?: number;
+  ptsPerQuarter?: number[];
+  players?: PlayerGameStats[];
 }
 
 export type Meta = {

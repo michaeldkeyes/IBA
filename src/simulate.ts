@@ -65,9 +65,12 @@ function simulate(
   let teamStats: TeamStats[] = teams.map((team, index) => {
     return {
       teamId: team.teamId,
+      abbrev: team.abbrev,
       losses: team.losses,
       wins: team.wins,
       points: 0,
+      ptsThisQuarter: 0,
+      ptsPerQuarter: [],
       fga: 0,
       fgm: 0,
       threepa: 0,
@@ -92,8 +95,8 @@ function simulate(
     teams: [teamStats[0], teamStats[1]],
   };
 
-  setPlayingTimes(lengthOfQuarter, gameResult.teams[0].players);
-  setPlayingTimes(lengthOfQuarter, gameResult.teams[1].players);
+  setPlayingTimes(lengthOfQuarter, gameResult.teams[0].players!);
+  setPlayingTimes(lengthOfQuarter, gameResult.teams[1].players!);
 
   let playersOnCourt = [
     gameResult.teams[0].players!.slice(0, 5),
@@ -131,6 +134,11 @@ function simulate(
     });
 
     if (gameClock >= lengthOfQuarter) {
+      gameResult.teams.forEach((team) => {
+        team.ptsPerQuarter!.push(team.ptsThisQuarter!);
+        team.ptsThisQuarter = 0;
+      });
+
       currentQuarter++;
     }
 
@@ -151,15 +159,15 @@ function simulate(
       console.log("Overtime!");
     } else if (gameClock >= lengthOfQuarter) {
       gameClock = 0;
-      setPlayingTimes(lengthOfQuarter - gameClock, gameResult.teams[0].players);
-      setPlayingTimes(lengthOfQuarter - gameClock, gameResult.teams[1].players);
+      setPlayingTimes(lengthOfQuarter - gameClock, gameResult.teams[0].players!);
+      setPlayingTimes(lengthOfQuarter - gameClock, gameResult.teams[1].players!);
     }
   }
 
   // Add the players game stats to their season stats
   for (let i = 0; i < players.length; i++) {
     players[i].map((player) => {
-      let playerToAddStatsFrom = gameResult.teams[i].players.find(
+      let playerToAddStatsFrom = gameResult.teams[i].players!.find(
         (player2) => player.playerId === player2.playerId
       );
       player.stats.fga += playerToAddStatsFrom!.fga;
@@ -297,6 +305,7 @@ function shootFreeThrows(playerToShoot: PlayerGameStats, num: number, team: Team
   while (num > 0) {
     if (getRandomNumber(1000) < playerToShoot.attr.freePercentage) {
       team.points++;
+      team.ptsThisQuarter!++;
       team.fta++;
       team.ftm++;
       playerToShoot.points++;
@@ -523,6 +532,7 @@ function simPossession(playersOnCourt: PlayerGameStats[][], teams: TeamStats[]) 
       playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)
     ) {
       teams[offense].points += 2;
+      teams[offense].ptsThisQuarter! += 2;
       teams[offense].fga++;
       teams[offense].fgm++;
       playerToShoot!.points += 2;
@@ -551,6 +561,7 @@ function simPossession(playersOnCourt: PlayerGameStats[][], teams: TeamStats[]) 
       playerToShoot.attr.threePercentage + playerToShoot.attr.threePercentage * shotModifier
     ) {
       teams[offense].points += 3;
+      teams[offense].ptsThisQuarter! += 3;
       teams[offense].fga++;
       teams[offense].fgm++;
       teams[offense].threepa++;
