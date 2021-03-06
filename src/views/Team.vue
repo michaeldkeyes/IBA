@@ -121,6 +121,147 @@
     </tbody>
   </table>
 
+  <div class="is-size-4">Opponent Stats</div>
+  <table class="table is-bordered is-narrow is-fullwidth">
+    <thead>
+      <tr>
+        <th>FG</th>
+        <th>FGA</th>
+        <th>FG%</th>
+        <th>3P</th>
+        <th>3PA</th>
+        <th>3P%</th>
+        <th>2P</th>
+        <th>2PA</th>
+        <th>2P%</th>
+        <th>FT</th>
+        <th>FTA</th>
+        <th>FT%</th>
+        <th>ORB</th>
+        <th>DRB</th>
+        <th>TRB</th>
+        <th>AST</th>
+        <th>STL</th>
+        <th>BLK</th>
+        <th>TOV</th>
+        <th>PTS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{
+            (teamStats.oppFgm / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppFga / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{ (teamStats.oppFgm / teamStats.oppFga).toFixed(3) }}
+        </td>
+        <td>
+          {{
+            (
+              teamStats.oppThreepm /
+              (teamStats.wins + teamStats.losses)
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              teamStats.oppThreepa /
+              (teamStats.wins + teamStats.losses)
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{ (teamStats.oppThreepm / teamStats.oppThreepa).toFixed(3) }}
+        </td>
+        <td>
+          {{
+            (
+              (teamStats.oppFgm - teamStats.oppThreepm) /
+              (teamStats.wins + teamStats.losses)
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (teamStats.oppFga - teamStats.oppThreepa) /
+              (teamStats.wins + teamStats.losses)
+            ).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (
+              (teamStats.oppFgm - teamStats.oppThreepm) /
+              (teamStats.oppFga - teamStats.oppThreepa)
+            ).toFixed(3)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppFtm / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppFta / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>{{ (teamStats.oppFtm / teamStats.fta).toFixed(3) }}</td>
+        <td>
+          {{
+            (teamStats.oppOrb / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppDrb / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppTrb / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppAst / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppStl / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppBlk / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppTov / (teamStats.wins + teamStats.losses)).toFixed(1)
+          }}
+        </td>
+        <td>
+          {{
+            (teamStats.oppPoints / (teamStats.wins + teamStats.losses)).toFixed(
+              1
+            )
+          }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
   <div class="is-size-4">Player Stats</div>
   <table
     class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"

@@ -84,6 +84,20 @@ function simulate(
       stl: 0,
       blk: 0,
       tov: 0,
+      oppPoints: 0,
+      oppFga: 0,
+      oppFgm: 0,
+      oppThreepa: 0,
+      oppThreepm: 0,
+      oppFta: 0,
+      oppFtm: 0,
+      oppOrb: 0,
+      oppDrb: 0,
+      oppTrb: 0,
+      oppAst: 0,
+      oppStl: 0,
+      oppBlk: 0,
+      oppTov: 0,
       players: playerStats[index],
     };
   });
@@ -209,6 +223,20 @@ function simulate(
     teams[i].stl += gameResult.teams[i].stl;
     teams[i].blk += gameResult.teams[i].blk;
     teams[i].tov += gameResult.teams[i].tov;
+    teams[i].oppPoints += gameResult.teams[i].oppPoints;
+    teams[i].oppFga += gameResult.teams[i].oppFga;
+    teams[i].oppFgm += gameResult.teams[i].oppFgm;
+    teams[i].oppThreepa += gameResult.teams[i].oppThreepa;
+    teams[i].oppThreepm += gameResult.teams[i].oppThreepm;
+    teams[i].oppFta += gameResult.teams[i].oppFta;
+    teams[i].oppFtm += gameResult.teams[i].oppFtm;
+    teams[i].oppOrb += gameResult.teams[i].oppOrb;
+    teams[i].oppDrb += gameResult.teams[i].oppDrb;
+    teams[i].oppTrb += gameResult.teams[i].oppTrb;
+    teams[i].oppAst += gameResult.teams[i].oppAst;
+    teams[i].oppStl += gameResult.teams[i].oppStl;
+    teams[i].oppBlk += gameResult.teams[i].oppBlk;
+    teams[i].oppTov += gameResult.teams[i].oppTov;
     if (i === winner) {
       teams[i].wins++;
       gameResult.winner = {
@@ -301,19 +329,19 @@ function whoShoots(playersOnCourt: PlayerGameStats[]) {
   return playersOnCourt[0];
 }
 
-function shootFreeThrows(playerToShoot: PlayerGameStats, num: number, team: TeamStats) {
+function shootFreeThrows(playerToShoot: PlayerGameStats, num: number, teams: TeamStats[]) {
   while (num > 0) {
+    teams[offense].fta++;
+    teams[defense].oppFta++;
+    playerToShoot.fta++;
     if (getRandomNumber(1000) < playerToShoot.attr.freePercentage) {
-      team.points++;
-      team.ptsThisQuarter!++;
-      team.fta++;
-      team.ftm++;
+      teams[offense].points++;
+      teams[defense].oppPoints++;
+      teams[offense].ptsThisQuarter!++;
+      teams[offense].ftm++;
+      teams[defense].oppFtm++;
       playerToShoot.points++;
-      playerToShoot.fta++;
       playerToShoot.ftm++;
-    } else {
-      team.fta++;
-      playerToShoot.fta++;
     }
     num--;
   }
@@ -322,7 +350,7 @@ function shootFreeThrows(playerToShoot: PlayerGameStats, num: number, team: Team
 function whoGetsRebound(
   offenseTeam: PlayerGameStats[],
   defenseTeam: PlayerGameStats[],
-  gameResultTeams: TeamStats[]
+  teams: TeamStats[]
 ) {
   const offenseTotal = offenseTeam
     .map((player) => player.attr.offensiveRebounding)
@@ -348,8 +376,10 @@ function whoGetsRebound(
       if (rng < max && rng >= min) {
         defenseTeam[i].drb++;
         defenseTeam[i].trb++;
-        gameResultTeams[defense].drb++;
-        gameResultTeams[defense].trb++;
+        teams[defense].drb++;
+        teams[offense].oppDrb++;
+        teams[defense].trb++;
+        teams[offense].oppTrb++;
         changePossession();
         return;
       }
@@ -364,8 +394,10 @@ function whoGetsRebound(
       if (rng < max && rng >= min) {
         offenseTeam[i].orb++;
         offenseTeam[i].trb++;
-        gameResultTeams[offense].orb++;
-        gameResultTeams[offense].trb++;
+        teams[offense].orb++;
+        teams[defense].oppOrb++;
+        teams[offense].trb++;
+        teams[defense].oppTrb++;
         return;
       }
     }
@@ -401,7 +433,7 @@ function whoAssists(team: PlayerGameStats[], playerToShoot: PlayerGameStats) {
 function checkForSteal(
   defenseTeam: PlayerGameStats[],
   offenseTeam: PlayerGameStats[],
-  gameResultTeams: TeamStats[]
+  teams: TeamStats[]
 ) {
   // Get the defense's total ability to steal
   const stealTotal = defenseTeam
@@ -413,7 +445,7 @@ function checkForSteal(
     const turnOverTotal = offenseTeam
       .map((player) => player.attr.ballHandling)
       .reduce((max, cur) => max + cur);
-    whoTurnedOver(offenseTeam, gameResultTeams, turnOverTotal);
+    whoTurnedOver(offenseTeam, teams, turnOverTotal);
 
     // Defense stole the ball. Find out who gets credited with the steal
     const rng = getRandomNumber(stealTotal);
@@ -424,7 +456,8 @@ function checkForSteal(
       max = defenseTeam[i].attr.stealing + min;
       if (rng < max && rng >= min) {
         defenseTeam[i].stl++;
-        gameResultTeams[defense].stl++;
+        teams[defense].stl++;
+        teams[offense].oppStl++;
         changePossession();
         return true;
       }
@@ -437,7 +470,7 @@ function checkForSteal(
 function checkForBlock(
   defenseTeam: PlayerGameStats[],
   playerToShoot: PlayerGameStats,
-  gameResultTeams: TeamStats[]
+  teams: TeamStats[]
 ) {
   // Get the defese's total ability to block
   const blockTotal = defenseTeam
@@ -454,8 +487,10 @@ function checkForBlock(
       max = defenseTeam[i].attr.blocking + min;
       if (rng < max && rng >= min) {
         defenseTeam[i].blk++;
-        gameResultTeams[defense].blk++;
-        gameResultTeams[offense].fga++;
+        teams[defense].blk++;
+        teams[offense].oppBlk++;
+        teams[offense].fga++;
+        teams[defense].oppFga++;
         playerToShoot.fga++;
         return true;
       }
@@ -465,25 +500,21 @@ function checkForBlock(
   return false;
 }
 
-function checkForTurnover(offenseTeam: PlayerGameStats[], gameResultTeams: TeamStats[]) {
+function checkForTurnover(offenseTeam: PlayerGameStats[], teams: TeamStats[]) {
   const turnOverTotal = offenseTeam
     .map((player) => player.attr.ballHandling)
     .reduce((max, cur) => max + cur);
 
   if (getRandomNumber(1000) <= turnOverTotal) {
     // Offense commited a turnover. Find out who gets credited with the turnover
-    whoTurnedOver(offenseTeam, gameResultTeams, turnOverTotal);
+    whoTurnedOver(offenseTeam, teams, turnOverTotal);
     changePossession();
   }
 
   return false;
 }
 
-function whoTurnedOver(
-  offenseTeam: PlayerGameStats[],
-  gameResultTeams: TeamStats[],
-  total: number
-) {
+function whoTurnedOver(offenseTeam: PlayerGameStats[], teams: TeamStats[], total: number) {
   const rng = getRandomNumber(total);
   let min = 0;
   let max = 0;
@@ -492,7 +523,8 @@ function whoTurnedOver(
     max = offenseTeam[i].attr.ballHandling + min;
     if (rng < max && rng >= min) {
       offenseTeam[i].tov++;
-      gameResultTeams[offense].tov++;
+      teams[offense].tov++;
+      teams[defense].oppTov++;
       return true;
     }
   }
@@ -532,25 +564,30 @@ function simPossession(playersOnCourt: PlayerGameStats[][], teams: TeamStats[]) 
       playerToShoot.attr.twoPercentage + Math.round(playerToShoot.attr.twoPercentage * shotModifier)
     ) {
       teams[offense].points += 2;
+      teams[defense].oppPoints += 2;
       teams[offense].ptsThisQuarter! += 2;
       teams[offense].fga++;
+      teams[defense].oppFga++;
       teams[offense].fgm++;
+      teams[defense].oppFgm++;
       playerToShoot!.points += 2;
       playerToShoot!.fga++;
       playerToShoot!.fgm++;
       if (playerToAssist) {
         teams[offense].ast++;
+        teams[defense].oppAst++;
         playerToAssist.ast++;
       }
 
-      if (fouled) shootFreeThrows(playerToShoot, 1, teams[offense]);
+      if (fouled) shootFreeThrows(playerToShoot, 1, teams);
       changePossession();
     } else {
       if (fouled) {
-        shootFreeThrows(playerToShoot, 2, teams[offense]);
+        shootFreeThrows(playerToShoot, 2, teams);
         changePossession();
       } else {
         teams[offense].fga++;
+        teams[defense].oppFga++;
         playerToShoot!.fga++;
         whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], teams);
       }
@@ -561,11 +598,16 @@ function simPossession(playersOnCourt: PlayerGameStats[][], teams: TeamStats[]) 
       playerToShoot.attr.threePercentage + playerToShoot.attr.threePercentage * shotModifier
     ) {
       teams[offense].points += 3;
+      teams[defense].oppPoints += 3;
       teams[offense].ptsThisQuarter! += 3;
       teams[offense].fga++;
+      teams[defense].oppFga++;
       teams[offense].fgm++;
+      teams[defense].oppFgm++;
       teams[offense].threepa++;
+      teams[defense].oppThreepa++;
       teams[offense].threepm++;
+      teams[defense].oppThreepm++;
       playerToShoot!.points += 3;
       playerToShoot!.fga++;
       playerToShoot!.fgm++;
@@ -573,13 +615,16 @@ function simPossession(playersOnCourt: PlayerGameStats[][], teams: TeamStats[]) 
       playerToShoot!.threepm++;
       if (playerToAssist) {
         teams[offense].ast++;
+        teams[defense].oppAst++;
         playerToAssist.ast++;
       }
-      if (fouled) shootFreeThrows(playerToShoot, 1, teams[offense]);
+      if (fouled) shootFreeThrows(playerToShoot, 1, teams);
       changePossession();
     } else {
       teams[offense].fga++;
+      teams[defense].oppFga++;
       teams[offense].threepa++;
+      teams[defense].oppThreepa++;
       playerToShoot!.fga++;
       playerToShoot!.threepa++;
       whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], teams);

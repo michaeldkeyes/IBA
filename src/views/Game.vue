@@ -14,8 +14,8 @@
     </div>
   </div>
 
-  <div>
-    <table class="table is-bordered">
+  <div class="is-flex is-justify-content-center mb-4">
+    <table class="table is-bordered is-narrow">
       <thead>
         <tr>
           <th></th>
@@ -32,7 +32,11 @@
       <tbody>
         <tr v-for="team in game.teams" :key="team.teamId">
           <td>
-            {{ team.abbrev }}
+            <router-link
+              :to="{ name: 'Team', params: { teamId: team.teamId } }"
+            >
+              {{ team.abbrev }}
+            </router-link>
           </td>
           <td v-for="(points, index) in team.ptsPerQuarter" :key="index">
             {{ points }}
@@ -47,14 +51,14 @@
               ).toFixed(1)
             }}
           </td>
-          <td>{{ team.orb }}</td>
+          <td>{{ (team.orb / (team.orb + team.oppDrb)).toFixed(3) }}</td>
           <td>{{ (team.ftm / team.fga).toFixed(3) }}</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="mb-6">
+  <div class="mb-4">
     <router-link
       class="is-size-4"
       :to="{ name: 'Team', params: { teamId: homeTeam.teamId } }"
