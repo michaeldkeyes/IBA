@@ -10,12 +10,6 @@ function generatePlayers(): Player[] {
 
   for (let i = 0; i < 32; i++) {
     for (let j = 0; j < 10; j++) {
-      //const rng = getRandomNumber(5);
-      // const scoring = getRandomNumberInRange(
-      //   playerRatings[j % 5].scoringMin,
-      //   playerRatings[j % 5].scoringMax
-      // );
-
       const player: Player = {
         teamId: i,
         first: firstNames.USA[getRandomNumber(firstNames.USA.length)],
@@ -32,10 +26,6 @@ function generatePlayers(): Player[] {
           getRandomNumber(50) + playerRatings[j % 5].twoPercentageMin,
         threePercentage:
           getRandomNumber(50) + playerRatings[j % 5].threePercentageMin,
-        freeRate: getRandomNumberInRange(
-          playerRatings[j % 5].freeRateMin,
-          playerRatings[j % 5].freeRateMax
-        ),
         freePercentage:
           getRandomNumberInRange(25, 50) +
           playerRatings[j % 5].freePercentageMin,
@@ -77,8 +67,6 @@ function generatePlayers(): Player[] {
         player.threePercentage * (player.threeRate / 1000)
       );
       player.offensiveAbility = twoShootingAbility + threeShootingAbility;
-
-      player.scoring = player.offensiveAbility;
 
       switch (player.position) {
         case "PG":

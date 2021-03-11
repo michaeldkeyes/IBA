@@ -60,7 +60,6 @@ function simulate(
           twoPercentage: player.twoPercentage,
           threeRate: player.threeRate,
           threePercentage: player.threePercentage,
-          freeRate: player.freeRate,
           freePercentage: player.freePercentage,
           rebounding: player.rebounding,
           passing: player.passing,

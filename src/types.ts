@@ -12,7 +12,6 @@ interface PlayerAttributes {
   threeRate: number;
   twoPercentage: number;
   threePercentage: number;
-  freeRate: number;
   freePercentage: number;
   rebounding: number;
   passing: number;

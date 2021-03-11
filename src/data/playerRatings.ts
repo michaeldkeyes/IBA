@@ -1,14 +1,10 @@
 export default [
   {
-    scoringMin: 28,
-    scoringMax: 285,
     twoPercentageMin: 49,
     threePercentageMin: 49,
     freePercentageMin: 49,
     threeRateMin: 400,
     threeRateMax: 600,
-    freeRateMin: 145,
-    freeRateMax: 340,
     reboundingMin: 0,
     passingMin: 49,
     stealMin: 49,
@@ -18,15 +14,11 @@ export default [
   },
   {
     // SG ratings
-    scoringMin: 36,
-    scoringMax: 350,
     twoPercentageMin: 49,
     threePercentageMin: 49,
     freePercentageMin: 44,
     threeRateMin: 300,
     threeRateMax: 500,
-    freeRateMin: 115,
-    freeRateMax: 380,
     reboundingMin: 9,
     passingMin: 0,
     stealMin: 49,
@@ -36,15 +28,11 @@ export default [
   },
   {
     // SF ratings
-    scoringMin: 34,
-    scoringMax: 345,
     twoPercentageMin: 49,
     threePercentageMin: 49,
     freePercentageMin: 44,
     threeRateMin: 200,
     threeRateMax: 400,
-    freeRateMin: 110,
-    freeRateMax: 430,
     reboundingMin: 19,
     passingMin: 24,
     stealMin: 24,
@@ -54,15 +42,11 @@ export default [
   },
   {
     // PF ratings
-    scoringMin: 30,
-    scoringMax: 300,
     twoPercentageMin: 49,
     threePercentageMin: 49,
     freePercentageMin: 34,
     threeRateMin: 100,
     threeRateMax: 300,
-    freeRateMin: 190,
-    freeRateMax: 490,
     reboundingMin: 49,
     passingMin: 1,
     stealMin: 1,
@@ -72,15 +56,11 @@ export default [
   },
   {
     // C ratings
-    scoringMin: 32,
-    scoringMax: 320,
     twoPercentageMin: 49,
     threePercentageMin: 49,
     freePercentageMin: 29,
     threeRateMin: 1,
     threeRateMax: 200,
-    freeRateMin: 290,
-    freeRateMax: 560,
     reboundingMin: 39,
     passingMin: 1,
     stealMin: 1,
