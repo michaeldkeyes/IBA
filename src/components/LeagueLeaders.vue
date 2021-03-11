@@ -24,13 +24,14 @@
         </h5>
       </div>
     </div>
-    <div class="block" v-if="store.leadingRebounders.length !== 0">
-      <strong class="is-size-5">Leading Rebounders</strong>
-      <div v-for="player in store.leadingRebounders" :key="player.playerId">
+    <div class="block" v-if="reboundsLeaders.length !== 0">
+      <strong class="is-size-5">Rebounding Leaders</strong>
+      <div v-for="player in reboundsLeaders" :key="player.playerId">
         <p>
           {{ store.teams.find((team) => team.teamId === player.teamId).city }}
           {{ player.first + " " + player.last }}
-          {{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }}
+          {{ player.stats.trb }}
+          ({{ (player.stats.trb / player.stats.gamesPlayed).toFixed(1) }})
         </p>
       </div>
     </div>
@@ -62,7 +63,8 @@
         <p>
           {{ store.teams.find((team) => team.teamId === player.teamId).city }}
           {{ player.first + " " + player.last }}
-          {{ (player.stats.blk / player.stats.gamesPlayed).toFixed(1) }}
+          {{ player.stats.blk }}
+          ({{ (player.stats.blk / player.stats.gamesPlayed).toFixed(1) }})
         </p>
       </div>
     </div>
@@ -95,6 +97,15 @@ export default defineComponent({
         .slice(0, 3);
     });
 
+    const reboundsLeaders = computed(() => {
+      return store.players
+        .filter((player) => player.stats.gamesPlayed! > 0)
+        .sort((a, b) => {
+          return a.stats.trb >= b.stats.trb ? -1 : 1;
+        })
+        .slice(0, 3);
+    });
+
     const leadingPassers = computed(() => {
       return store.players
         .filter((player) => player.stats.gamesPlayed! > 0)
@@ -115,10 +126,7 @@ export default defineComponent({
       return store.players
         .filter((player) => player.stats.gamesPlayed! > 0)
         .sort((a, b) => {
-          return a.stats.blk / a.stats.gamesPlayed! >=
-            b.stats.blk / b.stats.gamesPlayed!
-            ? -1
-            : 1;
+          return a.stats.blk >= b.stats.blk ? -1 : 1;
         })
         .slice(0, 3);
     });
@@ -127,6 +135,7 @@ export default defineComponent({
       store,
       leadingScorers,
       leadingThreePoints,
+      reboundsLeaders,
       leadingPassers,
       stealsLeaders,
       blocksLeaders,

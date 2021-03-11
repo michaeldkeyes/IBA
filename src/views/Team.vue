@@ -394,7 +394,7 @@ export default defineComponent({
     );
 
     const sortedPlayers = players.sort(function (a, b) {
-      return a.stats.min > b.stats.min ? -1 : 1;
+      return a.overall > b.overall ? -1 : 1;
     });
 
     return {

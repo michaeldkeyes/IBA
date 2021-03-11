@@ -5,6 +5,8 @@ import {
   getRandomNumberInRange,
 } from "./generators/randomNumber";
 
+import injuries from "./data/injuries";
+
 const coinFlip = getRandomNumber(2);
 let offense = coinFlip;
 let defense = offense === 0 ? 1 : 0;
@@ -29,6 +31,7 @@ function simulate(
   let gameOver = false;
   let currentQuarter = 1;
   let gameClock = 0;
+
   let players = [homePlayers, awayPlayers];
   let teams = [homeTeam, awayTeam];
 
@@ -37,6 +40,7 @@ function simulate(
       return {
         playerId: player.playerId!,
         name: player.first + " " + player.last,
+        overall: player.overall,
         pos: player.position,
         points: 0,
         fga: 0,
@@ -68,6 +72,7 @@ function simulate(
           ballHandling: player.ballHandling,
           offensiveAbility: player.offensiveAbility,
         },
+        injury: player.injury,
       };
     });
   });
@@ -119,18 +124,27 @@ function simulate(
     teams: [teamStats[0], teamStats[1]],
   };
 
-  setPlayingTimes(lengthOfQuarter, gameResult.teams[0].players!);
-  setPlayingTimes(lengthOfQuarter, gameResult.teams[1].players!);
+  let homePlayersFiltered = filterInjuredPlayers(gameResult.teams[0].players!);
+  let awayPlayersFiltered = filterInjuredPlayers(gameResult.teams[1].players!);
 
   let playersOnCourt = [
-    gameResult.teams[0].players!.slice(0, 5),
-    gameResult.teams[1].players!.slice(0, 5),
+    homePlayersFiltered.slice(0, 5),
+    awayPlayersFiltered.slice(0, 5),
   ];
   let playersOnBench = [
-    gameResult.teams[0].players!.slice(5, 10),
-    gameResult.teams[1].players!.slice(5, 10),
+    homePlayersFiltered.slice(5, homePlayersFiltered.length),
+    awayPlayersFiltered.slice(5, awayPlayersFiltered.length),
   ];
-  //let playersInReserve = [gameResult.teams[0].players!.slice(11, gameResult.teams[0].players!.length), gameResult.teams[1].players!.slice(11, gameResult.teams[1].players!.length)]
+
+  setPlayingTimes(lengthOfQuarter, [
+    ...playersOnCourt[0],
+    ...playersOnBench[0],
+  ]);
+  setPlayingTimes(lengthOfQuarter, [
+    ...playersOnCourt[1],
+    ...playersOnBench[1],
+  ]);
+
   setScoring(playersOnCourt[0], playersOnBench[0]);
   setScoring(playersOnCourt[1], playersOnBench[1]);
 
@@ -148,16 +162,27 @@ function simulate(
 
     simPossession(playersOnCourt, gameResult.teams);
 
+    if (injuryCheck(playersOnCourt[offense])) {
+      setPlayingTimes(lengthOfQuarter - gameClock, [
+        ...filterInjuredPlayers(playersOnCourt[offense]),
+        ...playersOnBench[offense],
+      ]);
+    }
+    if (injuryCheck(playersOnCourt[defense])) {
+      setPlayingTimes(lengthOfQuarter - gameClock, [
+        ...filterInjuredPlayers(playersOnCourt[defense]),
+        ...playersOnBench[defense],
+      ]);
+    }
+
     playersOnCourt[0].map((player) => {
       if (player.minutesToPlayThisQuarter <= 0) {
         substitutePlayers(playersOnCourt[0], playersOnBench[0]);
-        // setScoring(playersOnCourt[0]);
       }
     });
     playersOnCourt[1].map((player) => {
       if (player.minutesToPlayThisQuarter <= 0) {
         substitutePlayers(playersOnCourt[1], playersOnBench[1]);
-        // setScoring(playersOnCourt[1]);
       }
     });
 
@@ -186,14 +211,14 @@ function simulate(
       gameClock = 0;
     } else if (gameClock >= lengthOfQuarter) {
       gameClock = 0;
-      setPlayingTimes(
-        lengthOfQuarter - gameClock,
-        gameResult.teams[0].players!
-      );
-      setPlayingTimes(
-        lengthOfQuarter - gameClock,
-        gameResult.teams[1].players!
-      );
+      setPlayingTimes(lengthOfQuarter, [
+        ...playersOnCourt[0],
+        ...playersOnBench[0],
+      ]);
+      setPlayingTimes(lengthOfQuarter, [
+        ...playersOnCourt[1],
+        ...playersOnBench[1],
+      ]);
     }
   }
 
@@ -218,6 +243,18 @@ function simulate(
       player.stats.stl += playerToAddStatsFrom!.stl;
       player.stats.blk += playerToAddStatsFrom!.blk;
       player.stats.tov += playerToAddStatsFrom!.tov;
+      if (playerToAddStatsFrom!.injury.games > 0) {
+        playerToAddStatsFrom!.injury.games--;
+        if (playerToAddStatsFrom!.injury.games === 0) {
+          player.injury = {
+            injured: false,
+            games: 0,
+            type: "",
+          };
+        } else {
+          player.injury = playerToAddStatsFrom!.injury;
+        }
+      }
       if (playerToAddStatsFrom!.min > 0) {
         player.stats.gamesPlayed!++;
       }
@@ -318,6 +355,9 @@ function setScoring(
 
 // Sets the playing time for each player by quarter
 function setPlayingTimes(timeRemaining: number, players: PlayerGameStats[]) {
+  players = players.sort((a, b) => {
+    return a.overall > b.overall ? -1 : 1;
+  });
   // timeRemaining is the time left in the quarter. There's 5 players on the floor at any time so we multiply by 5 to get the total number of seconds to distribute
   let timeAvailable = timeRemaining * 5;
 
@@ -393,6 +433,7 @@ function shootFreeThrows(
     }
     num--;
   }
+  changePossession();
 }
 
 function whoGetsRebound(
@@ -640,11 +681,9 @@ function simPossession(
       }
 
       if (fouled) shootFreeThrows(playerToShoot, 1, teams);
-      changePossession();
     } else {
       if (fouled) {
         shootFreeThrows(playerToShoot, 2, teams);
-        changePossession();
       } else {
         teams[offense].fga++;
         teams[defense].oppFga++;
@@ -683,11 +722,9 @@ function simPossession(
         playerToAssist.ast++;
       }
       if (fouled) shootFreeThrows(playerToShoot, 1, teams);
-      changePossession();
     } else {
       if (fouled) {
         shootFreeThrows(playerToShoot, 3, teams);
-        changePossession();
       } else {
         teams[offense].fga++;
         teams[defense].oppFga++;
@@ -699,6 +736,27 @@ function simPossession(
       }
     }
   }
+}
+
+function injuryCheck(playersOnCourt: PlayerGameStats[]) {
+  const injuryRate = 2;
+
+  if (getRandomNumber(10000) <= injuryRate) {
+    const injuryRoll = getRandomNumber(injuries.length);
+    playersOnCourt[getRandomNumber(playersOnCourt.length)].injury = {
+      injured: true,
+      type: injuries[injuryRoll].type,
+      games: injuries[injuryRoll].games,
+    };
+
+    return true;
+  }
+
+  return false;
+}
+
+function filterInjuredPlayers(players: PlayerGameStats[]) {
+  return players.filter((player) => player.injury.injured === false);
 }
 
 export default simulate;

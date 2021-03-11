@@ -3,27 +3,11 @@
     {{ store.teams[player.teamId].city }} {{ store.teams[player.teamId].name }}
   </router-link>
   <h1>{{ player.first }} {{ player.last }}</h1>
-  <h4>
-    Scoring: {{ player.scoring }}
-    <span
-      >({{
-        Math.round((player.scoring / playerRatings[1].scoringMax) * 100)
-      }})</span
-    >
-  </h4>
   <h4>Two Point Shooting: {{ player.twoPercentage }}</h4>
   <h4>Two Rate: {{ player.twoRate }}</h4>
   <h4>Three Point Shooting: {{ player.threePercentage }}</h4>
   <h4>Three Rate: {{ player.threeRate }}</h4>
   <h4>Free Throw Shooting: {{ player.freePercentage }}</h4>
-  <h4>
-    Free Throw Rate: {{ player.freeRate }}
-    <span
-      >({{
-        Math.round((player.freeRate / playerRatings[4].freeRateMax) * 100)
-      }})</span
-    >
-  </h4>
   <h4>Rebounding: {{ player.rebounding }}</h4>
   <h4>Passing: {{ player.passing }}</h4>
   <h4>Stealing: {{ player.stealing }}</h4>

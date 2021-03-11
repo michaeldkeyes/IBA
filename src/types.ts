@@ -6,6 +6,12 @@ export type Game = {
   overtimes: number;
 };
 
+interface Injury {
+  injured: boolean;
+  games: number;
+  type: string;
+}
+
 interface PlayerAttributes {
   scoring: number;
   twoRate: number;
@@ -30,15 +36,18 @@ export interface Player extends PlayerAttributes {
   last: string;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
+  injury: Injury;
 }
 
 export interface PlayerGameStats extends StatBase {
   playerId: number;
   name: string;
+  overall: number;
   min: number;
   minutesToPlayThisQuarter: number;
   pos: string;
   attr: PlayerAttributes;
+  injury: Injury;
 }
 
 export type Schedule = {

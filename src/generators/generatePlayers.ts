@@ -56,6 +56,11 @@ function generatePlayers(): Player[] {
           blk: 0,
           tov: 0,
         },
+        injury: {
+          injured: false,
+          games: 0,
+          type: "",
+        },
       };
       player.twoRate = 1000 - player.threeRate;
 

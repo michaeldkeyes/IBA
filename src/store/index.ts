@@ -31,17 +31,6 @@ export const useLeagueStore = defineStore({
             : 1;
         });
     },
-    leadingRebounders() {
-      return this.players
-        .filter((player) => player.stats.gamesPlayed! > 0)
-        .sort((a, b) => {
-          return a.stats.trb / a.stats.gamesPlayed! >=
-            b.stats.trb / b.stats.gamesPlayed!
-            ? -1
-            : 1;
-        })
-        .slice(0, 3);
-    },
   },
   actions: {
     setPlayers(players: Player[]) {

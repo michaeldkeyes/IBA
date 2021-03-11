@@ -105,7 +105,10 @@ export default defineComponent({
         try {
           console.log("Saving game results to database...");
           store.increaseDay();
-          await db.games.bulkAdd(gameResults, gameKeys);
+          await db.games.bulkAdd(
+            JSON.parse(JSON.stringify(gameResults)),
+            gameKeys
+          );
           await db.players.bulkPut(JSON.parse(JSON.stringify(players)));
           await db.teamStats.bulkPut(JSON.parse(JSON.stringify(teams)));
           await db.schedule.bulkDelete(keysToDelete);
@@ -116,7 +119,6 @@ export default defineComponent({
           await db.teamStats
             .toArray()
             .then((teams) => store.setTeamStats(teams));
-          // prettier-ignore
           await db.games.toArray().then((games) => store.setGames(games));
           console.log("Saved!");
           numDays--;
@@ -130,8 +132,6 @@ export default defineComponent({
       store,
       createDb,
       simGames,
-      // westernConference: computed(() => store.westernConference),
-      // easternConference: computed(() => store.easternConference),
     };
   },
 });
