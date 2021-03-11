@@ -11,10 +11,10 @@ function generatePlayers(): Player[] {
   for (let i = 0; i < 32; i++) {
     for (let j = 0; j < 10; j++) {
       //const rng = getRandomNumber(5);
-      const scoring = getRandomNumberInRange(
-        playerRatings[j % 5].scoringMin,
-        playerRatings[j % 5].scoringMax
-      );
+      // const scoring = getRandomNumberInRange(
+      //   playerRatings[j % 5].scoringMin,
+      //   playerRatings[j % 5].scoringMax
+      // );
 
       const player: Player = {
         teamId: i,
@@ -22,49 +22,27 @@ function generatePlayers(): Player[] {
         last: lastNames.USA[getRandomNumber(lastNames.USA.length)],
         position: positions[j % 5],
         overall: 0,
-        scoring,
+        scoring: 0,
         twoRate: 0,
         threeRate: getRandomNumberInRange(
           playerRatings[j % 5].threeRateMin,
           playerRatings[j % 5].threeRateMax
         ),
-        twoPercentage: getRandomNumberInRange(
-          playerRatings[j % 5].twoPercentageMin,
-          playerRatings[j % 5].twoPercentageMax
-        ),
-        threePercentage: getRandomNumberInRange(
-          playerRatings[j % 5].threePercentageMin,
-          playerRatings[j % 5].threePercentageMax
-        ),
+        twoPercentage:
+          getRandomNumber(50) + playerRatings[j % 5].twoPercentageMin,
+        threePercentage:
+          getRandomNumber(50) + playerRatings[j % 5].threePercentageMin,
         freeRate: getRandomNumberInRange(
           playerRatings[j % 5].freeRateMin,
           playerRatings[j % 5].freeRateMax
         ),
-        freePercentage: getRandomNumberInRange(
+        freePercentage:
+          getRandomNumberInRange(25, 50) +
           playerRatings[j % 5].freePercentageMin,
-          playerRatings[j % 5].freePercentageMax
-        ),
-        // offensiveRebounding: getRandomNumberInRange(
-        //   playerRatings[j % 5].offensiveReboundingMin,
-        //   playerRatings[j % 5].offensiveReboundingMax
-        // )
-        offensiveRebounding: 0,
-        defensiveRebounding: getRandomNumberInRange(
-          playerRatings[j % 5].defensiveReboundingMin,
-          playerRatings[j % 5].defensiveReboundingMax
-        ),
-        passing: getRandomNumberInRange(
-          playerRatings[j % 5].passingMin,
-          playerRatings[j % 5].passingMax
-        ),
-        blocking: getRandomNumberInRange(
-          playerRatings[j % 5].blockMin,
-          playerRatings[j % 5].blockMax
-        ),
-        stealing: getRandomNumberInRange(
-          playerRatings[j % 5].stealMin,
-          playerRatings[j % 5].stealMax
-        ),
+        rebounding: getRandomNumber(50) + playerRatings[j % 5].reboundingMin,
+        passing: getRandomNumber(50) + playerRatings[j % 5].passingMin,
+        stealing: getRandomNumber(50) + playerRatings[j % 5].stealMin,
+        blocking: getRandomNumber(50) + playerRatings[j % 5].blockMin,
         ballHandling: getRandomNumberInRange(
           playerRatings[j % 5].ballHandlingMin,
           playerRatings[j % 5].ballHandlingMax
@@ -90,24 +68,52 @@ function generatePlayers(): Player[] {
         },
       };
       player.twoRate = 1000 - player.threeRate;
-      // A player's offensive rebounding is about 25-65% of their defensive rebounding
-      player.offensiveRebounding = Math.round(
-        player.defensiveRebounding * (getRandomNumberInRange(25, 65) / 100)
-      );
 
       // Determine player overall
       let twoShootingAbility = Math.round(
-        Math.round((player.twoPercentage / playerRatings[4].twoPercentageMax) * 100) *
-          (player.twoRate / 1000)
+        player.twoPercentage * (player.twoRate / 1000)
       );
       let threeShootingAbility = Math.round(
-        Math.round((player.threePercentage / playerRatings[1].threePercentageMax) * 100) *
-          (player.threeRate / 1000)
+        player.threePercentage * (player.threeRate / 1000)
       );
-      const shootingAbility = twoShootingAbility + threeShootingAbility;
-      player.offensiveAbility = Math.ceil(
-        (shootingAbility + Math.round((player.scoring / playerRatings[1].scoringMax) * 100)) / 2
-      );
+      player.offensiveAbility = twoShootingAbility + threeShootingAbility;
+
+      player.scoring = player.offensiveAbility;
+
+      switch (player.position) {
+        case "PG":
+          player.overall = Math.round(
+            player.offensiveAbility * 0.5 +
+              player.passing * 0.2 +
+              player.stealing * 0.3
+          );
+          break;
+        case "SG":
+          player.overall = Math.round(
+            player.offensiveAbility * 0.61 + player.stealing * 0.39
+          );
+          break;
+        case "SF":
+          player.overall = Math.round(
+            player.offensiveAbility * 0.4 +
+              (player.rebounding + 30) * 0.235 +
+              (player.passing + 25) * 0.15 +
+              (player.stealing + 25) * 0.235
+          );
+          break;
+        case "PF":
+          player.overall = Math.round(
+            player.offensiveAbility * 0.6 + player.rebounding * 0.4
+          );
+          break;
+        case "C":
+          player.overall = Math.round(
+            player.offensiveAbility * 0.5 +
+              (player.rebounding + 10) * 0.3 +
+              player.blocking * 0.2
+          );
+          break;
+      }
 
       players.push(player);
     }

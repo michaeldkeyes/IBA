@@ -6,13 +6,7 @@ export type Game = {
   overtimes: number;
 };
 
-export interface Player {
-  playerId?: number;
-  position: string;
-  overall: number;
-  teamId: number;
-  first: string;
-  last: string;
+interface PlayerAttributes {
   scoring: number;
   twoRate: number;
   threeRate: number;
@@ -20,15 +14,23 @@ export interface Player {
   threePercentage: number;
   freeRate: number;
   freePercentage: number;
-  offensiveRebounding: number;
-  defensiveRebounding: number;
+  rebounding: number;
   passing: number;
   stealing: number;
   blocking: number;
   ballHandling: number;
+  offensiveAbility: number;
+}
+
+export interface Player extends PlayerAttributes {
+  playerId?: number;
+  position: string;
+  overall: number;
+  teamId: number;
+  first: string;
+  last: string;
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
-  offensiveAbility: number;
 }
 
 export interface PlayerGameStats extends StatBase {
@@ -37,22 +39,7 @@ export interface PlayerGameStats extends StatBase {
   min: number;
   minutesToPlayThisQuarter: number;
   pos: string;
-  attr: {
-    scoring: number;
-    twoRate: number;
-    twoPercentage: number;
-    threeRate: number;
-    threePercentage: number;
-    freeRate: number;
-    freePercentage: number;
-    offensiveRebounding: number;
-    defensiveRebounding: number;
-    passing: number;
-    stealing: number;
-    blocking: number;
-    ballHandling: number;
-    offensiveAbility: number;
-  };
+  attr: PlayerAttributes;
 }
 
 export type Schedule = {
@@ -62,7 +49,7 @@ export type Schedule = {
   awayTeamId: number;
 };
 
-export interface StatBase {
+interface StatBase {
   points: number;
   fga: number;
   fgm: number;

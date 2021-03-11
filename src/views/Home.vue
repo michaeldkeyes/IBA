@@ -80,13 +80,13 @@ export default defineComponent({
           const homePlayers = store.players
             .filter((player) => player.teamId === game.homeTeamId)
             .sort((a, b) => {
-              return a.offensiveAbility > b.offensiveAbility ? -1 : 1;
+              return a.overall > b.overall ? -1 : 1;
             });
           const homeTeam = store.teamStats[game.homeTeamId];
           const awayPlayers = store.players
             .filter((player) => player.teamId === game.awayTeamId)
             .sort((a, b) => {
-              return a.offensiveAbility > b.offensiveAbility ? -1 : 1;
+              return a.overall > b.overall ? -1 : 1;
             });
           const awayTeam = store.teamStats[game.awayTeamId];
 
