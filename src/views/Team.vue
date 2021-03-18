@@ -304,6 +304,9 @@
           >
             {{ player.first }} {{ player.last }}
           </router-link>
+          <span v-if="player.injury.injured" class="injured">
+            {{ player.injury.games }}
+          </span>
         </td>
         <td>{{ player.overall }}</td>
         <td>{{ player.position }}</td>

@@ -39,4 +39,40 @@ export default [
     type: "Sprained Finger",
     games: 2,
   },
+  {
+    type: "Strained Calf",
+    games: 9,
+  },
+  {
+    type: "Bruised Leg",
+    games: 2,
+  },
+  {
+    type: "Bruised Hip",
+    games: 2,
+  },
+  {
+    type: "Sprained Foot",
+    games: 5,
+  },
+  {
+    type: "Achilles Tendinitis",
+    games: 6,
+  },
+  {
+    type: "Sprained Thumb",
+    games: 5,
+  },
+  {
+    type: "Sprained Wrist",
+    games: 5,
+  },
+  {
+    type: "Sprained Shoulder",
+    games: 8,
+  },
+  {
+    type: "Strained Neck",
+    games: 2,
+  },
 ];

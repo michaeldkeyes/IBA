@@ -3,26 +3,26 @@
     {{ store.teams[player.teamId].city }} {{ store.teams[player.teamId].name }}
   </router-link>
   <h1>{{ player.first }} {{ player.last }}</h1>
-  <h4>Two Point Shooting: {{ player.twoPercentage }}</h4>
-  <h4>Two Rate: {{ player.twoRate }}</h4>
-  <h4>Three Point Shooting: {{ player.threePercentage }}</h4>
-  <h4>Three Rate: {{ player.threeRate }}</h4>
-  <h4>Free Throw Shooting: {{ player.freePercentage }}</h4>
-  <h4>Rebounding: {{ player.rebounding }}</h4>
-  <h4>Passing: {{ player.passing }}</h4>
-  <h4>Stealing: {{ player.stealing }}</h4>
-  <h4>Blocking: {{ player.blocking }}</h4>
+  <h4>Two Point Shooting: {{ player.attr.twoPercentage }}</h4>
+  <h4>Two Rate: {{ player.attr.twoRate }}</h4>
+  <h4>Three Point Shooting: {{ player.attr.threePercentage }}</h4>
+  <h4>Three Rate: {{ player.attr.threeRate }}</h4>
+  <h4>Free Throw Shooting: {{ player.attr.freePercentage }}</h4>
+  <h4>Rebounding: {{ player.attr.rebounding }}</h4>
+  <h4>Passing: {{ player.attr.passing }}</h4>
+  <h4>Stealing: {{ player.attr.stealing }}</h4>
+  <h4>Blocking: {{ player.attr.blocking }}</h4>
   <h4>
-    Ball Handling: {{ player.ballHandling }}
+    Ball Handling: {{ player.attr.ballHandling }}
     <span>
       ({{
         Math.round(
-          (player.ballHandling / playerRatings[0].ballHandlingMax) * 100
+          (player.attr.ballHandling / playerRatings[0].ballHandlingMax) * 100
         )
       }})
     </span>
   </h4>
-  <h4>{{ player.offensiveAbility }}</h4>
+  <h4>{{ player.attr.offensiveAbility }}</h4>
   <h4>PER: {{ calculatePER() }}</h4>
 </template>
 

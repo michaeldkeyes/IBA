@@ -27,7 +27,7 @@ interface PlayerAttributes {
   offensiveAbility: number;
 }
 
-export interface Player extends PlayerAttributes {
+export interface Player {
   playerId?: number;
   position: string;
   overall: number;
@@ -37,6 +37,7 @@ export interface Player extends PlayerAttributes {
   stats: StatBase & PlayerStats;
   gameStats?: StatBase & PlayerStats;
   injury: Injury;
+  attr: PlayerAttributes;
 }
 
 export interface PlayerGameStats extends StatBase {
@@ -44,10 +45,13 @@ export interface PlayerGameStats extends StatBase {
   name: string;
   overall: number;
   min: number;
-  minutesToPlayThisQuarter: number;
   pos: string;
   attr: PlayerAttributes;
   injury: Injury;
+  playingTime: number;
+  restTime: number;
+  courtTime: number;
+  benchTime: number;
 }
 
 export type Schedule = {

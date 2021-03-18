@@ -50,7 +50,6 @@ function simulate(
         fta: 0,
         ftm: 0,
         min: 0,
-        minutesToPlayThisQuarter: 0,
         orb: 0,
         drb: 0,
         trb: 0,
@@ -58,20 +57,11 @@ function simulate(
         stl: 0,
         blk: 0,
         tov: 0,
-        attr: {
-          scoring: player.scoring,
-          twoRate: player.twoRate,
-          twoPercentage: player.twoPercentage,
-          threeRate: player.threeRate,
-          threePercentage: player.threePercentage,
-          freePercentage: player.freePercentage,
-          rebounding: player.rebounding,
-          passing: player.passing,
-          stealing: player.stealing,
-          blocking: player.blocking,
-          ballHandling: player.ballHandling,
-          offensiveAbility: player.offensiveAbility,
-        },
+        attr: player.attr,
+        playingTime: 0,
+        restTime: 0,
+        courtTime: 0,
+        benchTime: 0,
         injury: player.injury,
       };
     });
@@ -136,14 +126,8 @@ function simulate(
     awayPlayersFiltered.slice(5, awayPlayersFiltered.length),
   ];
 
-  setPlayingTimes(lengthOfQuarter, [
-    ...playersOnCourt[0],
-    ...playersOnBench[0],
-  ]);
-  setPlayingTimes(lengthOfQuarter, [
-    ...playersOnCourt[1],
-    ...playersOnBench[1],
-  ]);
+  setPlayingTimes([...playersOnCourt[0], ...playersOnBench[0]]);
+  setPlayingTimes([...playersOnCourt[1], ...playersOnBench[1]]);
 
   setScoring(playersOnCourt[0], playersOnBench[0]);
   setScoring(playersOnCourt[1], playersOnBench[1]);
@@ -156,35 +140,29 @@ function simulate(
       gameClock = lengthOfQuarter;
       shotClock = gameClock - lengthOfQuarter;
     }
+    increaseMinutes(
+      playersOnCourt[offense],
+      playersOnBench[offense],
+      shotClock
+    );
+    increaseMinutes(
+      playersOnCourt[defense],
+      playersOnBench[defense],
+      shotClock
+    );
 
-    increaseMinutes(playersOnCourt[offense], shotClock);
-    increaseMinutes(playersOnCourt[defense], shotClock);
-
-    simPossession(playersOnCourt, gameResult.teams);
+    simPossession(playersOnCourt, playersOnBench, gameResult.teams);
 
     if (injuryCheck(playersOnCourt[offense])) {
-      setPlayingTimes(lengthOfQuarter - gameClock, [
-        ...filterInjuredPlayers(playersOnCourt[offense]),
-        ...playersOnBench[offense],
-      ]);
+      playersOnCourt[offense] = filterInjuredPlayers(playersOnCourt[offense]);
+      setPlayingTimes([...playersOnCourt[offense], ...playersOnBench[offense]]);
+      substitutePlayers(playersOnCourt[offense], playersOnBench[offense]);
     }
     if (injuryCheck(playersOnCourt[defense])) {
-      setPlayingTimes(lengthOfQuarter - gameClock, [
-        ...filterInjuredPlayers(playersOnCourt[defense]),
-        ...playersOnBench[defense],
-      ]);
+      playersOnCourt[defense] = filterInjuredPlayers(playersOnCourt[defense]);
+      setPlayingTimes([...playersOnCourt[defense], ...playersOnBench[defense]]);
+      substitutePlayers(playersOnCourt[defense], playersOnBench[defense]);
     }
-
-    playersOnCourt[0].map((player) => {
-      if (player.minutesToPlayThisQuarter <= 0) {
-        substitutePlayers(playersOnCourt[0], playersOnBench[0]);
-      }
-    });
-    playersOnCourt[1].map((player) => {
-      if (player.minutesToPlayThisQuarter <= 0) {
-        substitutePlayers(playersOnCourt[1], playersOnBench[1]);
-      }
-    });
 
     if (gameClock >= lengthOfQuarter) {
       gameResult.teams.forEach((team) => {
@@ -211,14 +189,6 @@ function simulate(
       gameClock = 0;
     } else if (gameClock >= lengthOfQuarter) {
       gameClock = 0;
-      setPlayingTimes(lengthOfQuarter, [
-        ...playersOnCourt[0],
-        ...playersOnBench[0],
-      ]);
-      setPlayingTimes(lengthOfQuarter, [
-        ...playersOnCourt[1],
-        ...playersOnBench[1],
-      ]);
     }
   }
 
@@ -318,10 +288,17 @@ function changePossession() {
   defense = temp;
 }
 
-function increaseMinutes(players: PlayerGameStats[], count: number) {
-  return players.map((player) => {
+function increaseMinutes(
+  playersOnCourt: PlayerGameStats[],
+  playersOnBench: PlayerGameStats[],
+  count: number
+) {
+  playersOnCourt.forEach((player) => {
     player.min += count;
-    player.minutesToPlayThisQuarter -= count;
+    player.courtTime++;
+  });
+  playersOnBench.forEach((player) => {
+    player.benchTime++;
   });
 }
 
@@ -329,10 +306,27 @@ function substitutePlayers(
   playersOnCourt: PlayerGameStats[],
   playersOnBench: PlayerGameStats[]
 ) {
-  const playerSubbingOut = playersOnCourt.pop();
-  const playerSubbingIn = playersOnBench.shift();
-  playersOnCourt.unshift(playerSubbingIn!);
-  playersOnBench.push(playerSubbingOut!);
+  let playersToSubOut = playersOnCourt.filter(
+    (player) => player.courtTime >= player.playingTime
+  );
+
+  if (playersToSubOut.length > 0 || playersOnCourt.length < 5) {
+    playersToSubOut.forEach((player) => {
+      player.courtTime = 0;
+      const index = playersOnCourt.indexOf(player);
+      playersOnCourt.splice(index, 1);
+      playersOnBench.push(player);
+    });
+    let playersToSubIn = playersOnBench.filter((player) => {
+      return player.benchTime >= player.restTime && player.playingTime > 0;
+    });
+    playersToSubIn.forEach((player) => {
+      player.benchTime = 0;
+      const index = playersOnBench.indexOf(player);
+      playersOnBench.splice(index, 1);
+      playersOnCourt.push(player);
+    });
+  }
 }
 
 function setScoring(
@@ -354,39 +348,20 @@ function setScoring(
 }
 
 // Sets the playing time for each player by quarter
-function setPlayingTimes(timeRemaining: number, players: PlayerGameStats[]) {
+function setPlayingTimes(players: PlayerGameStats[]) {
   players = players.sort((a, b) => {
     return a.overall > b.overall ? -1 : 1;
   });
-  // timeRemaining is the time left in the quarter. There's 5 players on the floor at any time so we multiply by 5 to get the total number of seconds to distribute
-  let timeAvailable = timeRemaining * 5;
+  const quarterPossessions = 50;
+  let possessionsToPlay = 37;
+  const decrementor = 3;
 
-  // We want to randomly assign playing time based on a players position on the depth chart. The following was calculated that the time for the best player on a team will play on average 9 minutes per quarter
-  let maxTime = Math.floor(timeRemaining * 0.8125);
-  let minTime = Math.floor(timeRemaining * 0.6875);
-  const timeReducer = timeRemaining * 0.0625;
-
-  // Go through every player and assign minutes. maxTime and minTime get reduced every iteration so players get less play time the further down the depth chart they are
-  for (let i = 0; i < players.length; i++) {
-    let minutesToPlayThisQuarter = getRandomNumberInRange(minTime, maxTime);
-
-    if (minutesToPlayThisQuarter < timeAvailable) {
-      timeAvailable -= minutesToPlayThisQuarter;
-      players[i].minutesToPlayThisQuarter = minutesToPlayThisQuarter;
-      // The 5th and 6th players on the roster get roughly the same amount of playing time, so we don't lower the time
-      if (i !== 4) {
-        maxTime -= timeReducer;
-        minTime -= timeReducer;
-      }
-    } else if (minutesToPlayThisQuarter > timeAvailable) {
-      players[i].minutesToPlayThisQuarter = timeAvailable;
-      timeAvailable = 0;
-      return;
-    }
-  }
-
-  // If there is still time available somehow after going through the roster then we just give the remaining time to the star player
-  if (timeAvailable > 0) players[0].minutesToPlayThisQuarter += timeAvailable;
+  players.forEach((player, index) => {
+    if (index > 9) return;
+    player.playingTime = possessionsToPlay;
+    player.restTime = quarterPossessions - possessionsToPlay;
+    if (index !== 4) possessionsToPlay -= decrementor;
+  });
 }
 
 function whoShoots(playersOnCourt: PlayerGameStats[]) {
@@ -627,6 +602,7 @@ function whoTurnedOver(
 
 function simPossession(
   playersOnCourt: PlayerGameStats[][],
+  playersOnBench: PlayerGameStats[][],
   teams: TeamStats[]
 ) {
   if (checkForSteal(playersOnCourt[defense], playersOnCourt[offense], teams)) {
@@ -634,6 +610,8 @@ function simPossession(
   }
 
   if (checkForTurnover(playersOnCourt[offense], teams)) {
+    substitutePlayers(playersOnCourt[offense], playersOnBench[offense]);
+    substitutePlayers(playersOnCourt[defense], playersOnBench[defense]);
     return;
   }
 
@@ -680,10 +658,16 @@ function simPossession(
         playerToAssist.ast++;
       }
 
-      if (fouled) shootFreeThrows(playerToShoot, 1, teams);
+      if (fouled) {
+        shootFreeThrows(playerToShoot, 1, teams);
+        substitutePlayers(playersOnCourt[offense], playersOnBench[offense]);
+        substitutePlayers(playersOnCourt[defense], playersOnBench[defense]);
+      }
     } else {
       if (fouled) {
         shootFreeThrows(playerToShoot, 2, teams);
+        substitutePlayers(playersOnCourt[offense], playersOnBench[offense]);
+        substitutePlayers(playersOnCourt[defense], playersOnBench[defense]);
       } else {
         teams[offense].fga++;
         teams[defense].oppFga++;
@@ -721,10 +705,16 @@ function simPossession(
         teams[defense].oppAst++;
         playerToAssist.ast++;
       }
-      if (fouled) shootFreeThrows(playerToShoot, 1, teams);
+      if (fouled) {
+        shootFreeThrows(playerToShoot, 1, teams);
+        substitutePlayers(playersOnCourt[offense], playersOnBench[offense]);
+        substitutePlayers(playersOnCourt[defense], playersOnBench[defense]);
+      }
     } else {
       if (fouled) {
         shootFreeThrows(playerToShoot, 3, teams);
+        substitutePlayers(playersOnCourt[offense], playersOnBench[offense]);
+        substitutePlayers(playersOnCourt[defense], playersOnBench[defense]);
       } else {
         teams[offense].fga++;
         teams[defense].oppFga++;

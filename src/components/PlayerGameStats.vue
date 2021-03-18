@@ -63,20 +63,34 @@
           </router-link>
         </td>
         <td>{{ player.pos }}</td>
-        <td>{{ (player.min / 60).toFixed(1) }}</td>
-        <td>{{ player.fgm }}</td>
-        <td>{{ player.fga }}</td>
-        <td>{{ player.threepm }}</td>
-        <td>{{ player.threepa }}</td>
-        <td>{{ player.ftm }}</td>
-        <td>{{ player.fta }}</td>
-        <td>{{ player.orb }}</td>
-        <td>{{ player.trb }}</td>
-        <td>{{ player.ast }}</td>
-        <td>{{ player.stl }}</td>
-        <td>{{ player.blk }}</td>
-        <td>{{ player.tov }}</td>
-        <td>{{ player.points }}</td>
+        <td
+          v-if="player.min === 0 && player.injury.injured"
+          colspan="15"
+          style="text-align: center"
+        >
+          DNP - {{ player.injury.type }}
+        </td>
+        <td
+          v-if="player.min === 0 && !player.injury.injured"
+          colspan="15"
+          style="text-align: center"
+        >
+          DNP - Coach's Decision
+        </td>
+        <td v-if="player.min > 0">{{ (player.min / 60).toFixed(1) }}</td>
+        <td v-if="player.min > 0">{{ player.fgm }}</td>
+        <td v-if="player.min > 0">{{ player.fga }}</td>
+        <td v-if="player.min > 0">{{ player.threepm }}</td>
+        <td v-if="player.min > 0">{{ player.threepa }}</td>
+        <td v-if="player.min > 0">{{ player.ftm }}</td>
+        <td v-if="player.min > 0">{{ player.fta }}</td>
+        <td v-if="player.min > 0">{{ player.orb }}</td>
+        <td v-if="player.min > 0">{{ player.trb }}</td>
+        <td v-if="player.min > 0">{{ player.ast }}</td>
+        <td v-if="player.min > 0">{{ player.stl }}</td>
+        <td v-if="player.min > 0">{{ player.blk }}</td>
+        <td v-if="player.min > 0">{{ player.tov }}</td>
+        <td v-if="player.min > 0">{{ player.points }}</td>
       </tr>
     </tbody>
   </table>
@@ -94,7 +108,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    props.team.players.sort((a, b) => {
+    props.team.players!.sort((a, b) => {
       return a.min >= b.min ? -1 : 1;
     });
 
