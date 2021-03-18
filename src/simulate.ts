@@ -117,6 +117,8 @@ function simulate(
   let homePlayersFiltered = filterInjuredPlayers(gameResult.teams[0].players!);
   let awayPlayersFiltered = filterInjuredPlayers(gameResult.teams[1].players!);
 
+  setHomeCourtAdvantage(homePlayersFiltered, awayPlayersFiltered);
+
   let playersOnCourt = [
     homePlayersFiltered.slice(0, 5),
     awayPlayersFiltered.slice(0, 5),
@@ -179,6 +181,8 @@ function simulate(
       gameResult.teams[0].points !== gameResult.teams[1].points
     ) {
       gameOver = true;
+      // Since we changed the player's attributes, we have to change them back
+      setHomeCourtAdvantage(awayPlayersFiltered, homePlayersFiltered);
     } else if (
       gameClock >= lengthOfQuarter &&
       currentQuarter > numQuarters &&
@@ -626,10 +630,6 @@ function simPossession(
 
   let fouled = false;
 
-  // if (getRandomNumber(1000) <= playerToShoot.attr.freeRate) {
-  //   fouled = true;
-  // }
-
   if (getRandomNumber(1000) <= playerToShoot.attr.twoRate) {
     if (checkForBlock(playersOnCourt[defense], playerToShoot, teams)) {
       whoGetsRebound(playersOnCourt[offense], playersOnCourt[defense], teams);
@@ -747,6 +747,24 @@ function injuryCheck(playersOnCourt: PlayerGameStats[]) {
 
 function filterInjuredPlayers(players: PlayerGameStats[]) {
   return players.filter((player) => player.injury.injured === false);
+}
+
+function setHomeCourtAdvantage(
+  homePlayers: PlayerGameStats[],
+  awayPlayers: PlayerGameStats[]
+) {
+  homePlayers.forEach((player) => {
+    for (let attr in player.attr) {
+      // @ts-ignore
+      player.attr[attr]++;
+    }
+  });
+  awayPlayers.forEach((player) => {
+    for (let attr in player.attr) {
+      // @ts-ignore
+      player.attr[attr]--;
+    }
+  });
 }
 
 export default simulate;

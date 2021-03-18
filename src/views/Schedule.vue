@@ -18,28 +18,6 @@
               :class="[
                 gamesPlayed[index] !== undefined &&
                 gamesPlayed[index].winner.teamId ===
-                  gamesPlayed[index].teams[0].teamId
-                  ? color(gamesPlayed[index].winner.teamId)
-                  : '',
-              ]"
-            >
-              <div class="is-flex-grow-1 p-1">
-                {{ store.teams[game.homeTeamId].city }}
-                {{ store.teams[game.homeTeamId].name }}
-              </div>
-              <div class="p-1" v-if="gamesPlayed[index] !== undefined">
-                <router-link
-                  :to="{ name: 'Game', params: { gameId: game.gameId } }"
-                >
-                  {{ gamesPlayed[index].teams[0].points }}
-                </router-link>
-              </div>
-            </div>
-            <div
-              class="is-flex is-align-items-center"
-              :class="[
-                gamesPlayed[index] !== undefined &&
-                gamesPlayed[index].winner.teamId ===
                   gamesPlayed[index].teams[1].teamId
                   ? color(gamesPlayed[index].winner.teamId)
                   : '',
@@ -54,6 +32,28 @@
                   :to="{ name: 'Game', params: { gameId: game.gameId } }"
                 >
                   {{ gamesPlayed[index].teams[1].points }}
+                </router-link>
+              </div>
+            </div>
+            <div
+              class="is-flex is-align-items-center"
+              :class="[
+                gamesPlayed[index] !== undefined &&
+                gamesPlayed[index].winner.teamId ===
+                  gamesPlayed[index].teams[0].teamId
+                  ? color(gamesPlayed[index].winner.teamId)
+                  : '',
+              ]"
+            >
+              <div class="is-flex-grow-1 p-1">
+                @ {{ store.teams[game.homeTeamId].city }}
+                {{ store.teams[game.homeTeamId].name }}
+              </div>
+              <div class="p-1" v-if="gamesPlayed[index] !== undefined">
+                <router-link
+                  :to="{ name: 'Game', params: { gameId: game.gameId } }"
+                >
+                  {{ gamesPlayed[index].teams[0].points }}
                 </router-link>
               </div>
             </div>

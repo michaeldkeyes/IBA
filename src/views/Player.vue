@@ -22,8 +22,9 @@
       }})
     </span>
   </h4>
-  <h4>{{ player.attr.offensiveAbility }}</h4>
+  <h4>Offensive Ability: {{ player.attr.offensiveAbility }}</h4>
   <h4>PER: {{ calculatePER() }}</h4>
+  <h4>{{ magicMetric() }}</h4>
 </template>
 
 <script lang="ts">
@@ -74,11 +75,27 @@ export default defineComponent({
       ).toFixed(1);
     };
 
+    const magicMetric = () => {
+      return Math.round(
+        2.45 * player!.stats.fgm +
+          1.2 * player!.stats.threepm +
+          0.65 * player!.stats.trb +
+          0.9 * player!.stats.ast +
+          player!.stats.stl +
+          1.4 * player!.stats.ftm +
+          0.8 * player!.stats.blk -
+          0.65 * player!.stats.fga -
+          0.5 * player!.stats.fta -
+          player!.stats.tov
+      );
+    };
+
     return {
       store,
       player,
       playerRatings,
       calculatePER,
+      magicMetric,
     };
   },
 });
