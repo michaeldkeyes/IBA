@@ -33,11 +33,19 @@ function generateTeamStats(): TeamStats[] {
     oppTov: 0,
     wins: 0,
     losses: 0,
+    conferenceWins: 0,
+    conferenceLosses: 0,
+    divisionWins: 0,
+    divisionLosses: 0,
   };
   const teams: TeamStats[] = [];
 
   for (let i = 0; i < 32; i++) {
-    teams.push({ ...teamSkeleton, teamId: i, abbrev: teamsData[i].abbrev });
+    teams.push({
+      ...teamSkeleton,
+      teamId: i,
+      abbrev: teamsData[i].abbrev,
+    });
   }
 
   return teams;

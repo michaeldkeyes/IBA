@@ -49,17 +49,32 @@ export default defineComponent({
         return store.teamStats
           .filter((team) => team.teamId! < 16)
           .sort((a, b) => {
-            return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
-              ? -1
-              : 1;
+            if (a.wins > b.wins) return -1;
+            else if (a.wins === b.wins) {
+              if (a.conferenceWins > b.conferenceWins) return -1;
+              else if (a.conferenceWins === b.conferenceWins) {
+                if (a.divisionWins > b.divisionWins) return -1;
+                return 1;
+              }
+              return 1;
+            }
+            return 1;
+            //return a.wins > b.wins ? -1 : 1;
           });
       } else {
         return store.teamStats
           .filter((team) => team.teamId! > 15)
           .sort((a, b) => {
-            return a.wins / (a.wins + a.losses) > b.wins / (b.wins + b.losses)
-              ? -1
-              : 1;
+            if (a.wins > b.wins) return -1;
+            else if (a.wins === b.wins) {
+              if (a.conferenceWins > b.conferenceWins) return -1;
+              else if (a.conferenceWins === b.conferenceWins) {
+                if (a.divisionWins > b.divisionWins) return -1;
+                return 1;
+              }
+              return 1;
+            }
+            return 1;
           });
       }
     });

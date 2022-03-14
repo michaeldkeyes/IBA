@@ -33,7 +33,7 @@ export default [
     freePercentageMin: 44,
     threeRateMin: 200,
     threeRateMax: 400,
-    reboundingMin: 19,
+    reboundingMin: 24,
     passingMin: 24,
     stealMin: 24,
     blockMin: 1,

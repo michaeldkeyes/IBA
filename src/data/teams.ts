@@ -26,7 +26,7 @@ export default [
   {
     teamId: 3,
     city: "Santiago",
-    name: "Chile",
+    name: "Ballers",
     abbrev: "STGO",
     conference: "West",
     division: "South America",

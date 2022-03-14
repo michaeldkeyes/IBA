@@ -1,8 +1,8 @@
-// Creates an 80 game schedule
 import teams from "../data/teams";
 import { getRandomNumber } from "./randomNumber";
 import { Schedule, Team } from "../types";
 
+// Creates an 80 game schedule
 function generateGames(): Schedule[] {
   const games: Schedule[] = [];
 
@@ -58,7 +58,9 @@ function generateGames(): Schedule[] {
       // Filter the teams that have been selected the least so far
       do {
         gamesPicked++;
-        teamsToPlayAgainst = filteredTeams.filter((team) => timesChosen[team.teamId] < gamesPicked);
+        teamsToPlayAgainst = filteredTeams.filter(
+          (team) => timesChosen[team.teamId] < gamesPicked
+        );
       } while (teamsToPlayAgainst.length === 0);
 
       // Find a random opponent

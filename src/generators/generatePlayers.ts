@@ -9,12 +9,16 @@ function generatePlayers(): Player[] {
   const positions: string[] = ["PG", "SG", "SF", "PF", "C"];
 
   for (let i = 0; i < 32; i++) {
-    for (let j = 0; j < 12; j++) {
+    let maxRoll = 50;
+    for (let j = 0; j < 13; j++) {
+      const position = j < 10 ? j % 5 : getRandomNumber(5);
+      if (j === 5) maxRoll -= 5;
+      if (j === 10) maxRoll -= 5;
       const player: Player = {
         teamId: i,
         first: firstNames.USA[getRandomNumber(firstNames.USA.length)],
         last: lastNames.USA[getRandomNumber(lastNames.USA.length)],
-        position: positions[j % 5],
+        position: positions[position],
         overall: 0,
         attr: {
           twoRate: 0,
@@ -23,16 +27,17 @@ function generatePlayers(): Player[] {
             playerRatings[j % 5].threeRateMax
           ),
           twoPercentage:
-            getRandomNumber(50) + playerRatings[j % 5].twoPercentageMin,
+            getRandomNumber(maxRoll) + playerRatings[j % 5].twoPercentageMin,
           threePercentage:
-            getRandomNumber(50) + playerRatings[j % 5].threePercentageMin,
+            getRandomNumber(maxRoll) + playerRatings[j % 5].threePercentageMin,
           freePercentage:
-            getRandomNumberInRange(25, 50) +
+            getRandomNumberInRange(25, maxRoll) +
             playerRatings[j % 5].freePercentageMin,
-          rebounding: getRandomNumber(50) + playerRatings[j % 5].reboundingMin,
-          passing: getRandomNumber(50) + playerRatings[j % 5].passingMin,
-          stealing: getRandomNumber(50) + playerRatings[j % 5].stealMin,
-          blocking: getRandomNumber(50) + playerRatings[j % 5].blockMin,
+          rebounding:
+            getRandomNumber(maxRoll) + playerRatings[j % 5].reboundingMin,
+          passing: getRandomNumber(maxRoll) + playerRatings[j % 5].passingMin,
+          stealing: getRandomNumber(maxRoll) + playerRatings[j % 5].stealMin,
+          blocking: getRandomNumber(maxRoll) + playerRatings[j % 5].blockMin,
           ballHandling: getRandomNumberInRange(
             playerRatings[j % 5].ballHandlingMin,
             playerRatings[j % 5].ballHandlingMax

@@ -1,7 +1,14 @@
 <template>
   <div class="is-flex is-flex-direction-column is-align-items-center mb-5">
     <h1 class="is-size-1">{{ team.city }} {{ team.name }}</h1>
-    <h3 class="is-size-3">{{ teamStats.wins }} - {{ teamStats.losses }}</h3>
+    <h3 class="is-size-3">
+      {{ teamStats.wins }} - {{ teamStats.losses }}
+      <span class="is-size-6"
+        >(C: {{ teamStats.conferenceWins }} -
+        {{ teamStats.conferenceLosses }} D: {{ teamStats.divisionWins }} -
+        {{ teamStats.divisionLosses }})</span
+      >
+    </h3>
     <div>
       <router-link
         :to="{ name: 'Schedule', params: { teamId: $route.params.teamId } }"
@@ -297,7 +304,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="player in sortedPlayers">
+      <tr v-for="player in sortedPlayers" :key="player.playerId">
         <td>
           <router-link
             :to="{ name: 'Player', params: { playerId: player.playerId } }"

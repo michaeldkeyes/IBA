@@ -1,5 +1,7 @@
 import { Game, Player, PlayerGameStats, TeamStats } from "./types";
 
+import teamsData from "./data/teams";
+
 import {
   getRandomNumber,
   getRandomNumberInRange,
@@ -71,6 +73,10 @@ function simulate(
     return {
       teamId: team.teamId,
       abbrev: team.abbrev,
+      conferenceLosses: team.conferenceLosses,
+      conferenceWins: team.conferenceWins,
+      divisionLosses: team.divisionLosses,
+      divisionWins: team.divisionWins,
       losses: team.losses,
       wins: team.wins,
       points: 0,
@@ -237,6 +243,12 @@ function simulate(
 
   const winner =
     gameResult.teams[0].points > gameResult.teams[1].points ? 0 : 1;
+  const conferenceRivals =
+    teamsData[gameResult.teams[0].teamId!].conference ===
+    teamsData[gameResult.teams[1].teamId!].conference;
+  const divisionRivals =
+    teamsData[gameResult.teams[0].teamId!].division ===
+    teamsData[gameResult.teams[1].teamId!].division;
 
   // Add the teams stats to their season stats
   for (let i = 0; i < teams.length; i++) {
@@ -274,12 +286,16 @@ function simulate(
         points: gameResult.teams[i].points,
         teamId: gameResult.teams[i].teamId!,
       };
+      if (conferenceRivals) teams[i].conferenceWins++;
+      if (divisionRivals) teams[i].divisionWins++;
     } else {
       teams[i].losses++;
       gameResult.loser = {
         points: gameResult.teams[i].points,
         teamId: gameResult.teams[i].teamId!,
       };
+      if (conferenceRivals) teams[i].conferenceLosses++;
+      if (divisionRivals) teams[i].divisionLosses++;
     }
   }
 
@@ -333,6 +349,52 @@ function substitutePlayers(
   }
 }
 
+// Sets the playing time for each player by quarter
+function setPlayingTimes(players: PlayerGameStats[]) {
+  players = players.sort((a, b) => {
+    return a.overall > b.overall ? -1 : 1;
+  });
+  const quarterPossessions = 50;
+  let possessionsToPlay = 37;
+  const decrementor = 3;
+
+  players.forEach((player, index) => {
+    if (index > 9) return;
+    player.playingTime = possessionsToPlay;
+    player.restTime = quarterPossessions - possessionsToPlay;
+    if (index !== 4) possessionsToPlay -= decrementor;
+  });
+}
+
+// function setPlayingTimes(players: PlayerGameStats[]) {
+//   // 720 seconds in a quarter
+//   const lengthOfQuarter = 720;
+//   let secondsToDistribute = lengthOfQuarter;
+//   // The number one player on a team will want to play 9 to 10 minutes per quarter
+//   let minSeconds = 540;
+//   let maxSeconds = 600;
+
+//   // Sort players by overall
+//   players.sort((a, b) => {
+//     return a.overall > b.overall ? -1 : 1;
+//   });
+
+//   // Distribute the seconds to each player decrementing min and max by 60 seconds per player
+//   for (let i = 0; i < 10; i++) {
+//     let secondsToPlay = getRandomNumberInRange(minSeconds, maxSeconds);
+//     secondsToDistribute -= secondsToPlay;
+//     players[i].playingTime = secondsToPlay;
+//     minSeconds -= 60;
+//     maxSeconds -= 60;
+//   }
+
+//   // There will still be time left after the above loop, so divide the remaining time by 10 and distribute evenly to every player
+//   const remainingTime = (secondsToDistribute /= 10);
+//   players.forEach((player) => {
+//     player.playingTime += remainingTime;
+//   });
+// }
+
 function setScoring(
   playersOnCourt: PlayerGameStats[],
   playersOnBench: PlayerGameStats[]
@@ -348,23 +410,6 @@ function setScoring(
   playersOnBench.map((player) => {
     player.attr.scoring = Math.round(player.attr.offensiveAbility * modifier);
     modifier -= 0.038;
-  });
-}
-
-// Sets the playing time for each player by quarter
-function setPlayingTimes(players: PlayerGameStats[]) {
-  players = players.sort((a, b) => {
-    return a.overall > b.overall ? -1 : 1;
-  });
-  const quarterPossessions = 50;
-  let possessionsToPlay = 37;
-  const decrementor = 3;
-
-  players.forEach((player, index) => {
-    if (index > 9) return;
-    player.playingTime = possessionsToPlay;
-    player.restTime = quarterPossessions - possessionsToPlay;
-    if (index !== 4) possessionsToPlay -= decrementor;
   });
 }
 

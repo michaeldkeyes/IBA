@@ -97,6 +97,10 @@ export interface TeamStats extends StatBase {
   abbrev?: string;
   wins: number;
   losses: number;
+  conferenceWins: number;
+  conferenceLosses: number;
+  divisionWins: number;
+  divisionLosses: number;
   oppPoints: number;
   oppFga: number;
   oppFgm: number;
