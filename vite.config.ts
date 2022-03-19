@@ -4,4 +4,8 @@ import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   plugins: [{ ...eslint(), enforce: "pre" }, vue()],
+  test: {
+    globals: true,
+    environment: "happy-dom",
+  },
 });
