@@ -54,7 +54,7 @@
       </tr>
     </tfoot>
     <tbody>
-      <tr v-for="player in team.players">
+      <tr v-for="player in team.players" :key="player.playerId">
         <td>
           <router-link
             :to="{ name: 'Player', params: { playerId: player.playerId } }"

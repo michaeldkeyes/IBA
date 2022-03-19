@@ -19,7 +19,7 @@
       <thead>
         <tr>
           <th></th>
-          <th v-for="index in game.teams[0].ptsPerQuarter.length">
+          <th v-for="index in game.teams[0].ptsPerQuarter.length" :key="index">
             {{ index }}
           </th>
           <th>F</th>
@@ -95,7 +95,7 @@ export default defineComponent({
       (game) => game.gameId === parseInt(props.gameId)
     );
     const homeTeam = store.teams.find(
-      (team) => team.teamId === game!.teams[0].teamId
+      (team) => team.teamId === game.teams[0].teamId
     );
     const awayTeam = store.teams.find(
       (team) => team.teamId === game?.teams[1].teamId

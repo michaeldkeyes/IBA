@@ -37,11 +37,11 @@ function generateGames(): Schedule[] {
     }
   }
 
-  let timesChosen = new Array(32).fill(0);
+  const timesChosen = new Array(32).fill(0);
   // Each team needs 6 more home games against non-divisional opponents
   for (let i = 0; i < teams.length; i++) {
     let remainingGames = 6;
-    let matchups: Team[] = [];
+    const matchups: Team[] = [];
 
     // Filter all the teams that are in the conference but not the division
     let filteredTeams: Team[] = teams.filter(
@@ -99,12 +99,12 @@ function generateGames(): Schedule[] {
 
 // Currently the schedule is in order. We need to shuffle it to make a realistic schedule
 function generateSchedule(): Schedule[] {
-  let schedule: Schedule[][] = [];
-  let games = generateGames();
+  const schedule: Schedule[][] = [];
+  const games = generateGames();
 
   while (games.length > 0) {
     // The league will play 8 games a day
-    let gameDay: Schedule[] = [];
+    const gameDay: Schedule[] = [];
     let iters = 0;
 
     while (gameDay.length < 8 && games.length > 0) {

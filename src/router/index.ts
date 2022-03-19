@@ -4,30 +4,30 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
     name: "Home",
-    component: () => import("../views/Home.vue"),
+    component: () => import("../views/HomeView.vue"),
   },
   {
     path: "/team/:teamId",
     name: "Team",
-    component: () => import("../views/Team.vue"),
+    component: () => import("../views/TeamView.vue"),
     props: true,
   },
   {
     path: "/player/:playerId",
     name: "Player",
-    component: () => import("../views/Player.vue"),
+    component: () => import("../views/PlayerView.vue"),
     props: true,
   },
   {
     path: "/schedule/:teamId",
     name: "Schedule",
-    component: () => import("../views/Schedule.vue"),
+    component: () => import("../views/ScheduleView.vue"),
     props: true,
   },
   {
     path: "/game/:gameId",
     name: "Game",
-    component: () => import("../views/Game.vue"),
+    component: () => import("../views/GameView.vue"),
     props: true,
   },
   {

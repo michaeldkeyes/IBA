@@ -72,10 +72,10 @@ function generatePlayers(): Player[] {
       player.attr.twoRate = 1000 - player.attr.threeRate;
 
       // Determine player overall
-      let twoShootingAbility = Math.round(
+      const twoShootingAbility = Math.round(
         player.attr.twoPercentage * (player.attr.twoRate / 1000)
       );
-      let threeShootingAbility = Math.round(
+      const threeShootingAbility = Math.round(
         player.attr.threePercentage * (player.attr.threeRate / 1000)
       );
       player.attr.offensiveAbility = twoShootingAbility + threeShootingAbility;
