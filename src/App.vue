@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { db } from "./Database";
+import { db } from "./api/Database";
 import teams from "./data/teams";
 import generatePlayers from "./generators/generatePlayers";
 import generateSchedule from "./generators/generateSchedule";
@@ -35,7 +35,7 @@ export default defineComponent({
         await db.players.bulkAdd(generatePlayers());
         await db.schedule.bulkAdd(generateSchedule());
         await db.teamStats.bulkAdd(generateTeamStats());
-        await db.meta.add({ day: 1, season: 2021, id: 1 });
+        await db.meta.add({ day: 1, season: 2022, id: 1 });
         await db.players.toArray().then((players) => store.setPlayers(players));
         await db.schedule
           .toArray()

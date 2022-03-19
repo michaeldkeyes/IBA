@@ -1,5 +1,5 @@
 import teams from "../data/teams";
-import { getRandomNumber } from "./randomNumber";
+import { getRandomNumber } from "../utils/random";
 import { Schedule, Team } from "../types";
 
 // Creates an 80 game schedule

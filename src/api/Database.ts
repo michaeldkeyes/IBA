@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import { Game, Player, Schedule, TeamStats } from "./types";
+import { Game, Player, Schedule, TeamStats } from "../types";
 
 class League extends Dexie {
   players: Dexie.Table<Player, number>;

@@ -1,5 +1,5 @@
 import { Player } from "../types";
-import { getRandomNumber, getRandomNumberInRange } from "./randomNumber";
+import { getRandomNumber, getRandomNumberInRange } from "../utils/random";
 import firstNames from "../data/firstNames";
 import lastNames from "../data/lastNames";
 import playerRatings from "../data/playerRatings";

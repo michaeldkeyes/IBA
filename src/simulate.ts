@@ -2,10 +2,7 @@ import { Game, Player, PlayerGameStats, TeamStats } from "./types";
 
 import teamsData from "./data/teams";
 
-import {
-  getRandomNumber,
-  getRandomNumberInRange,
-} from "./generators/randomNumber";
+import { getRandomNumber, getRandomNumberInRange } from "./utils/random";
 
 import injuries from "./data/injuries";
 
@@ -13,8 +10,8 @@ const coinFlip = getRandomNumber(2);
 let offense = coinFlip;
 let defense = offense === 0 ? 1 : 0;
 
-const twoPointNormalizer = 0.55;
-const threePointNormalizer = 0.4;
+const twoPointNormalizer = 0.55; // Try 0.6
+const threePointNormalizer = 0.4; // Try 0.45
 const freeThrowNormalizer = 0.92;
 const defensiveReboundNormalizer = 0.3;
 const offensiveReboundNormalizer = 0.15;
