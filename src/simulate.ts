@@ -2,10 +2,7 @@ import { Game, Player, PlayerGameStats, TeamStats } from "./types";
 
 import teamsData from "./data/teams";
 
-import {
-  getRandomNumber,
-  getRandomNumberInRange,
-} from "./generators/randomNumber";
+import { getRandomNumber, getRandomNumberInRange } from "./utils/random";
 
 import injuries from "./data/injuries";
 
@@ -13,8 +10,8 @@ const coinFlip = getRandomNumber(2);
 let offense = coinFlip;
 let defense = offense === 0 ? 1 : 0;
 
-const twoPointNormalizer = 0.55;
-const threePointNormalizer = 0.4;
+const twoPointNormalizer = 0.55; // Try 0.6
+const threePointNormalizer = 0.4; // Try 0.45
 const freeThrowNormalizer = 0.92;
 const defensiveReboundNormalizer = 0.3;
 const offensiveReboundNormalizer = 0.15;
@@ -34,10 +31,10 @@ function simulate(
   let currentQuarter = 1;
   let gameClock = 0;
 
-  let players = [homePlayers, awayPlayers];
-  let teams = [homeTeam, awayTeam];
+  const players = [homePlayers, awayPlayers];
+  const teams = [homeTeam, awayTeam];
 
-  let playerStats: PlayerGameStats[][] = players.map((team) => {
+  const playerStats: PlayerGameStats[][] = players.map((team) => {
     return team.map((player) => {
       return {
         playerId: player.playerId!,
@@ -69,7 +66,7 @@ function simulate(
     });
   });
 
-  let teamStats: TeamStats[] = teams.map((team, index) => {
+  const teamStats: TeamStats[] = teams.map((team, index) => {
     return {
       teamId: team.teamId,
       abbrev: team.abbrev,
@@ -113,23 +110,27 @@ function simulate(
     };
   });
 
-  let gameResult: Game = {
+  const gameResult: Game = {
     loser: { points: 0, teamId: 99 },
     winner: { points: 0, teamId: 99 },
     overtimes: 0,
     teams: [teamStats[0], teamStats[1]],
   };
 
-  let homePlayersFiltered = filterInjuredPlayers(gameResult.teams[0].players!);
-  let awayPlayersFiltered = filterInjuredPlayers(gameResult.teams[1].players!);
+  const homePlayersFiltered = filterInjuredPlayers(
+    gameResult.teams[0].players!
+  );
+  const awayPlayersFiltered = filterInjuredPlayers(
+    gameResult.teams[1].players!
+  );
 
   setHomeCourtAdvantage(homePlayersFiltered, awayPlayersFiltered);
 
-  let playersOnCourt = [
+  const playersOnCourt = [
     homePlayersFiltered.slice(0, 5),
     awayPlayersFiltered.slice(0, 5),
   ];
-  let playersOnBench = [
+  const playersOnBench = [
     homePlayersFiltered.slice(5, homePlayersFiltered.length),
     awayPlayersFiltered.slice(5, awayPlayersFiltered.length),
   ];
@@ -205,7 +206,7 @@ function simulate(
   // Add the players game stats to their season stats
   for (let i = 0; i < players.length; i++) {
     players[i].map((player) => {
-      let playerToAddStatsFrom = gameResult.teams[i].players!.find(
+      const playerToAddStatsFrom = gameResult.teams[i].players!.find(
         (player2) => player.playerId === player2.playerId
       );
       player.stats.fga += playerToAddStatsFrom!.fga;
@@ -303,7 +304,7 @@ function simulate(
 }
 
 function changePossession() {
-  let temp = offense;
+  const temp = offense;
   offense = defense;
   defense = temp;
 }
@@ -326,7 +327,7 @@ function substitutePlayers(
   playersOnCourt: PlayerGameStats[],
   playersOnBench: PlayerGameStats[]
 ) {
-  let playersToSubOut = playersOnCourt.filter(
+  const playersToSubOut = playersOnCourt.filter(
     (player) => player.courtTime >= player.playingTime
   );
 
@@ -337,7 +338,7 @@ function substitutePlayers(
       playersOnCourt.splice(index, 1);
       playersOnBench.push(player);
     });
-    let playersToSubIn = playersOnBench.filter((player) => {
+    const playersToSubIn = playersOnBench.filter((player) => {
       return player.benchTime >= player.restTime && player.playingTime > 0;
     });
     playersToSubIn.forEach((player) => {
@@ -799,13 +800,13 @@ function setHomeCourtAdvantage(
   awayPlayers: PlayerGameStats[]
 ) {
   homePlayers.forEach((player) => {
-    for (let attr in player.attr) {
+    for (const attr in player.attr) {
       // @ts-ignore
       player.attr[attr]++;
     }
   });
   awayPlayers.forEach((player) => {
-    for (let attr in player.attr) {
+    for (const attr in player.attr) {
       // @ts-ignore
       player.attr[attr]--;
     }

@@ -1,5 +1,5 @@
 export type Game = {
-  gameId?: number;
+  gameId: number;
   winner: { teamId: number; points: number };
   loser: { teamId: number; points: number };
   teams: TeamStats[];
