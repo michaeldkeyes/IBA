@@ -4,7 +4,7 @@ import { Schedule, Team } from "../types";
 
 // Creates an 80 game schedule
 function generateGames(): Schedule[] {
-  const games: Schedule[] = [];
+  let games: Schedule[] = [];
 
   for (let i = 0; i < teams.length; i++) {
     for (let j = 0; j < teams.length; j++) {
@@ -37,6 +37,12 @@ function generateGames(): Schedule[] {
     }
   }
 
+  games = findRemainingConferenceGames(games);
+
+  return games;
+}
+
+function findRemainingConferenceGames(games: Schedule[]) {
   const timesChosen = new Array(32).fill(0);
   // Each team needs 6 more home games against non-divisional opponents
   for (let i = 0; i < teams.length; i++) {
