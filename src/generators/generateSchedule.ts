@@ -1,4 +1,4 @@
-import teams from "../data/teams";
+import teams from "../core/team/teams";
 import { getRandomNumber } from "../utils/random";
 import { Schedule, Team } from "../types";
 

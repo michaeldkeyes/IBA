@@ -15,3 +15,25 @@
   padding: 0.25rem 0.4rem;
   width: 1rem;
 }
+
+div.dropdown-item.is-active {
+  background-color: $orange;
+  color: #fff;
+}
+
+.dropdown-item {
+  cursor: default;
+
+  &:hover {
+    background-color: $orange;
+  }
+}
+
+.dropdown-content {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.dropdown-menu {
+  width: 230px;
+}

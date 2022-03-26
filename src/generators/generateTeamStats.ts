@@ -1,5 +1,5 @@
 import { TeamStats } from "../types";
-import teamsData from "../data/teams";
+import teamsData from "../core/team/teams";
 
 function generateTeamStats(): TeamStats[] {
   const teamSkeleton: TeamStats = {

@@ -1,6 +1,6 @@
 import { Game, Player, PlayerGameStats, TeamStats } from "./types";
 
-import teamsData from "./data/teams";
+import teamsData from "./core/team/teams";
 
 import { getRandomNumber, getRandomNumberInRange } from "./utils/random";
 

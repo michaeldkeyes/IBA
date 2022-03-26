@@ -25,6 +25,14 @@ a {
   border-width: $border-width;
   color: $white;
 
+  &:hover {
+    border-color: $orange;
+  }
+
+  &:focus {
+    color: $white;
+  }
+
   &.is-active,
   &.is-focused,
   &:active,
