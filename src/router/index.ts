@@ -1,11 +1,11 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router";
 
 const routes: Array<RouteRecordRaw> = [
-  // {
-  //   path: "/",
-  //   name: "Home",
-  //   component: () => import("../views/HomeView.vue"),
-  // },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import("../views/HomeView.vue"),
+  },
   {
     path: "/",
     name: "CreateLeague",
@@ -44,6 +44,13 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  console.log(to.params);
+  console.log(to.name);
+
+  next();
 });
 
 export default router;

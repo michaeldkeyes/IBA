@@ -2,9 +2,15 @@
   <h1 class="is-size-1 has-text-centered mt-6">
     Welcome to the International Basketball Association
   </h1>
-  <div class="is-flex is-justify-content-center mt-6">
-    <button class="is-size-2 button is-primary">New League</button>
+  <div class="is-flex is-justify-content-center mt-6 mb-5">
+    <button class="is-size-2 button is-primary" @click="generate()">
+      New League
+    </button>
   </div>
+  <template v-if="hasLeagues">
+    <LeagueTable :leagues="leagues" />
+  </template>
+
   <div v-if="iHaveImplementedThis">
     <div class="dropdown" :class="dropdown.active.value ? 'is-active' : ''">
       <div class="dropdown-trigger">
@@ -48,39 +54,61 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onBeforeUnmount, onMounted } from "vue";
+import { defineComponent, ref } from "vue";
 import teams from "../core/team/teams";
-import { Team } from "../types";
+import generateLeague from "../core/league/generate";
+//import router from "../router";
+import LeagueTable from "../components/LeagueTable.vue";
+import { meta } from "../api/Meta";
+import { useRouter } from "vue-router";
+import { liveQuery } from "dexie"; // This works I don't know why it says liveQuery doesn't exist.
+import { useObservable } from "@vueuse/rxjs";
 
 export default defineComponent({
+  components: {
+    LeagueTable,
+  },
+
   setup() {
-    let selectedTeam = ref<Team | null>(null);
+    const router = useRouter();
 
-    let iHaveImplementedThis = ref(false);
+    //let selectedTeam = ref<Team | null>(null);
+    const iHaveImplementedThis = ref(false);
 
-    const dropdown = {
-      active: ref(false),
-      toggle: () => {
-        dropdown.active.value = !dropdown.active.value;
-      },
-      close: () => {
-        dropdown.active.value = false;
-      },
+    const generate = async () => {
+      await generateLeague();
+      router.push({ name: "Dashboard" });
     };
 
-    const selectTeam = (team: Team) => {
-      selectedTeam.value = team;
+    // const dropdown = {
+    //   active: ref(false),
+    //   toggle: () => {
+    //     dropdown.active.value = !dropdown.active.value;
+    //   },
+    //   close: () => {
+    //     dropdown.active.value = false;
+    //   },
+    // };
+
+    // const selectTeam = (team: Team) => {
+    //   selectedTeam.value = team;
+    // };
+
+    // onBeforeUnmount(() => {
+    //   document.removeEventListener("click", dropdown.close);
+    // });
+
+    // onMounted(() => {
+    //   document.addEventListener("click", dropdown.close);
+    // });
+
+    return {
+      teams,
+      generate,
+      iHaveImplementedThis,
+      leagues: useObservable(liveQuery(() => meta.leagues.toArray())),
+      hasLeagues: useObservable(liveQuery(() => meta.leagues.count())),
     };
-
-    onBeforeUnmount(() => {
-      document.removeEventListener("click", dropdown.close);
-    });
-
-    onMounted(() => {
-      document.addEventListener("click", dropdown.close);
-    });
-
-    return { dropdown, teams, selectedTeam, selectTeam, iHaveImplementedThis };
   },
 });
 </script>

@@ -1,4 +1,5 @@
 <template>
+  <NavBar />
   <div class="container">
     <!-- <button @click="createDb">Create League</button>
     <button @click="simGames(1)">Simulate Day</button>
@@ -22,10 +23,12 @@
 // import simulate from "./simulate";
 // import { Game, Player, TeamStats } from "./types";
 import { defineComponent } from "vue";
+import NavBar from "./components/NavbarIBA.vue";
 // import { useLeagueStore } from "./store/index";
 
 export default defineComponent({
   name: "App",
+  components: { NavBar },
   //   setup() {
   //     const store = useLeagueStore();
 
