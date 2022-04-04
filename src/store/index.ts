@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import { Game, Meta, Player, Schedule, Team, TeamStats } from "../types";
 
-export const useLeagueStore = defineStore({
-  id: "league",
+export const useLeagueStore = defineStore("league", {
   state: () => ({
     players: [] as Player[],
     schedule: [] as Schedule[],
@@ -10,10 +9,10 @@ export const useLeagueStore = defineStore({
     teamStats: [] as TeamStats[],
     games: [] as Game[],
     meta: {} as Meta,
-    isReady: false,
+    isLoaded: false,
   }),
   getters: {
-    westernConference() {
+    westernConference(): TeamStats[] {
       return this.teamStats
         .filter((team) => team.teamId! < 16)
         .sort((a, b) => {
@@ -22,7 +21,7 @@ export const useLeagueStore = defineStore({
             : 1;
         });
     },
-    easternConference() {
+    easternConference(): TeamStats[] {
       return this.teamStats
         .filter((team) => team.teamId! > 15)
         .sort((a, b) => {
@@ -61,8 +60,8 @@ export const useLeagueStore = defineStore({
     increaseSeason() {
       this.meta.season++;
     },
-    toggleIsReady() {
-      this.isReady = !this.isReady;
+    toggleIsLoaded() {
+      this.isLoaded = !this.isLoaded;
     },
   },
 });

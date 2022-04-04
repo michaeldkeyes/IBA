@@ -41,7 +41,7 @@ async function generateLeague() {
         .toArray()
         .then((league) => store.setMeta(league[0].day, league[0].season));
       store.setTeams(teams);
-      store.toggleIsReady();
+      store.toggleIsLoaded();
       console.log("Done!");
     }
   } catch (error) {

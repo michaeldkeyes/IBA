@@ -12,7 +12,9 @@
     <tbody>
       <tr v-for="league in leagues" :key="league.leagueId">
         <td>
-          <button class="button is-success">Play</button>
+          <button class="button is-success" @click="play(league.leagueId)">
+            Play
+          </button>
         </td>
         <td>{{ league.name }}</td>
         <td>{{ league.day }}</td>
@@ -39,6 +41,7 @@
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
 import { League } from "../api/Meta";
+import { useRouter } from "vue-router";
 
 import DeleteModal from "./DeleteModal.vue";
 
@@ -52,6 +55,7 @@ export default defineComponent({
   },
   components: { DeleteModal },
   setup() {
+    const router = useRouter();
     let showModal = ref(false);
     //let leagueIdForModal = ref(99);
     const leagueId = ref<number | undefined>(99);
@@ -68,7 +72,11 @@ export default defineComponent({
       showModal.value = false;
     };
 
-    return { showModal, openModal, closeModal, leagueId, leagueName };
+    const play = (leagueId: number) => {
+      router.push({ name: "Dashboard", params: { leagueId } });
+    };
+
+    return { showModal, openModal, closeModal, leagueId, leagueName, play };
   },
 });
 </script>

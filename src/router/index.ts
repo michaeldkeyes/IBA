@@ -1,8 +1,10 @@
 import { createWebHistory, createRouter, RouteRecordRaw } from "vue-router";
+import { useLeagueStore } from "../store";
+import { loadStore } from "../store/utils";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/dashboard",
+    path: "/dashboard/league/:leagueId",
     name: "Dashboard",
     component: () => import("../views/HomeView.vue"),
   },
@@ -46,9 +48,17 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  console.log(to.params);
-  console.log(to.name);
+router.beforeEach(async (to, from, next) => {
+  const store = useLeagueStore();
+  if (to.name === "CreateLeague") {
+    store.toggleIsLoaded();
+  }
+  if (to.params.leagueId) {
+    if (!store.isLoaded) {
+      const leagueName = `League ${to.params.leagueId}`;
+      await loadStore(store, leagueName);
+    }
+  }
 
   next();
 });

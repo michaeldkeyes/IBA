@@ -2,10 +2,10 @@ import Dexie from "dexie";
 import { Game, Player, Schedule, TeamStats } from "../types";
 
 class League extends Dexie {
-  players: Dexie.Table<Player, number>;
-  teamStats: Dexie.Table<TeamStats, number>;
-  schedule: Dexie.Table<Schedule, number>;
-  games: Dexie.Table<Game, number>;
+  players: Dexie.Table<Player>;
+  teamStats: Dexie.Table<TeamStats>;
+  schedule: Dexie.Table<Schedule>;
+  games: Dexie.Table<Game>;
   //meta: Dexie.Table<{ day: number; season: number; id: number }, number>;
 
   constructor(name: string) {

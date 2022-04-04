@@ -57,7 +57,6 @@
 import { defineComponent, ref } from "vue";
 import teams from "../core/team/teams";
 import generateLeague from "../core/league/generate";
-//import router from "../router";
 import LeagueTable from "../components/LeagueTable.vue";
 import { meta } from "../api/Meta";
 import { useRouter } from "vue-router";

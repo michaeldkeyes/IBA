@@ -4,7 +4,7 @@
     <h2 class="is-size-4">Day {{ store.meta.day }}</h2>
   </div>
 
-  <div class="is-flex is-flex-wrap-wrap columns" v-if="store.isReady">
+  <div class="is-flex is-flex-wrap-wrap columns">
     <ConferenceStandings conference="Western Conference" />
     <LeagueLeaders />
     <ConferenceStandings conference="Eastern Conference" />
@@ -26,6 +26,8 @@ export default defineComponent({
   },
   setup() {
     const store = useLeagueStore();
+    console.log("HomeView");
+    console.log(store.players);
 
     return {
       store,

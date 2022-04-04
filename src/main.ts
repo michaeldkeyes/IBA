@@ -5,6 +5,10 @@ import { createPinia } from "pinia";
 import "./assets/main.scss";
 
 const app = createApp(App);
-app.use(router);
 app.use(createPinia());
-app.mount("#app");
+app.use(router);
+
+router.isReady().then(() => {
+  app.mount("#app");
+});
+//app.mount("#app");
