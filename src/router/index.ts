@@ -51,7 +51,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const store = useLeagueStore();
   if (to.name === "CreateLeague") {
-    store.toggleIsLoaded();
+    store.setIsLoaded(false);
   }
   if (to.params.leagueId) {
     if (!store.isLoaded) {

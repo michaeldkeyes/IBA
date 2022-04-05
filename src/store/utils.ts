@@ -1,7 +1,7 @@
 import Dexie from "dexie";
 import teams from "../core/team/teams";
 
-async function loadStore(store, leagueName: string) {
+async function loadStore(store: any, leagueName: string) {
   console.log("loading store!");
   const db = await new Dexie(leagueName).open();
   await db
@@ -20,9 +20,7 @@ async function loadStore(store, leagueName: string) {
   //   .toArray()
   //   .then((db) => store.setMeta(league[0].day, league[0].season));
   store.setTeams(teams);
-  store.toggleIsLoaded();
-  console.log("Router");
-  console.log(store.players);
+  store.setIsLoaded(true);
 }
 
 export { loadStore };

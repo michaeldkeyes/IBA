@@ -26,8 +26,6 @@ export default defineComponent({
   },
   setup() {
     const store = useLeagueStore();
-    console.log("HomeView");
-    console.log(store.players);
 
     return {
       store,

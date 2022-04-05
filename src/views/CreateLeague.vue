@@ -75,8 +75,8 @@ export default defineComponent({
     const iHaveImplementedThis = ref(false);
 
     const generate = async () => {
-      await generateLeague();
-      router.push({ name: "Dashboard" });
+      const leagueId: number = (await generateLeague()) as number;
+      router.push({ name: "Dashboard", params: { leagueId } });
     };
 
     // const dropdown = {

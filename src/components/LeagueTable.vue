@@ -57,12 +57,10 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     let showModal = ref(false);
-    //let leagueIdForModal = ref(99);
     const leagueId = ref<number | undefined>(99);
     const leagueName = ref("");
 
     const openModal = (id: number, name: string) => {
-      //leagueIdForModal.value = leagueId;
       leagueId.value = id;
       leagueName.value = name;
       showModal.value = true;

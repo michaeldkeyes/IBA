@@ -11,12 +11,12 @@ const store = useLeagueStore();
 async function generateLeague() {
   try {
     console.log("Generating league...");
-    const numLeagues = await getNewLeagueId();
+    const leagueId = await getNewLeagueId();
     let leagueName = "";
-    if (numLeagues) {
-      leagueName = `League ${numLeagues + 1}`;
+    if (leagueId) {
+      leagueName = `League ${leagueId + 1}`;
       await meta.leagues.add({
-        leagueId: numLeagues + 1,
+        leagueId: leagueId + 1,
         day: 1,
         season: 2022,
         name: leagueName,
@@ -43,6 +43,7 @@ async function generateLeague() {
       store.setTeams(teams);
       store.toggleIsLoaded();
       console.log("Done!");
+      return leagueId;
     }
   } catch (error) {
     console.error(error);
@@ -51,11 +52,10 @@ async function generateLeague() {
 
 async function getNewLeagueId() {
   const leagues = await meta.leagues.toArray();
-  let leagueId: number | undefined = 0;
+  let leagueId = 0;
   if (leagues.length > 0) {
-    leagueId = leagues[leagues.length - 1].leagueId;
+    leagueId = leagues[leagues.length - 1].leagueId as number;
   }
-  console.log(leagueId);
 
   return leagueId;
 }

@@ -60,6 +60,9 @@ export const useLeagueStore = defineStore("league", {
     increaseSeason() {
       this.meta.season++;
     },
+    setIsLoaded(isLoaded: boolean) {
+      this.isLoaded = isLoaded;
+    },
     toggleIsLoaded() {
       this.isLoaded = !this.isLoaded;
     },
