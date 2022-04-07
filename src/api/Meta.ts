@@ -14,7 +14,7 @@ class Meta extends Dexie {
     super("Meta");
 
     this.version(1).stores({
-      leagues: "++leagueId",
+      leagues: "++leagueId, name",
     });
   }
 }

@@ -9,8 +9,8 @@ export default [
   },
   {
     teamId: 1,
-    city: "Buenos Aires",
-    name: "Argentina",
+    city: "Argentina",
+    name: "Angels",
     abbrev: "BA",
     conference: "West",
     division: "South America",
@@ -18,7 +18,7 @@ export default [
   {
     teamId: 2,
     city: "Lima",
-    name: "Peru",
+    name: "Justice",
     abbrev: "LIMA",
     conference: "West",
     division: "South America",
@@ -106,7 +106,7 @@ export default [
   {
     teamId: 13,
     city: "Paris",
-    name: "Musketeers",
+    name: "Saints",
     abbrev: "PAR",
     conference: "West",
     division: "European",
@@ -185,7 +185,7 @@ export default [
   },
   {
     teamId: 23,
-    city: "Kuala Lumpur",
+    city: "Malaysia",
     name: "Dolphins",
     abbrev: "KL",
     conference: "East",

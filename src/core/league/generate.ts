@@ -13,7 +13,7 @@ async function generateLeague() {
     console.log("Generating league...");
     const leagueId = await getNewLeagueId();
     let leagueName = "";
-    if (leagueId) {
+    if (leagueId >= 0) {
       leagueName = `League ${leagueId + 1}`;
       await meta.leagues.add({
         leagueId: leagueId + 1,
@@ -41,7 +41,7 @@ async function generateLeague() {
         .toArray()
         .then((league) => store.setMeta(league[0].day, league[0].season));
       store.setTeams(teams);
-      store.toggleIsLoaded();
+      store.setIsLoaded(true);
       console.log("Done!");
       return leagueId;
     }

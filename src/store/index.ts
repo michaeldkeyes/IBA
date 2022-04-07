@@ -63,8 +63,5 @@ export const useLeagueStore = defineStore("league", {
     setIsLoaded(isLoaded: boolean) {
       this.isLoaded = isLoaded;
     },
-    toggleIsLoaded() {
-      this.isLoaded = !this.isLoaded;
-    },
   },
 });
