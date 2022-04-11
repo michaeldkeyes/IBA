@@ -43,7 +43,7 @@ async function generateLeague() {
       store.setTeams(teams);
       store.setIsLoaded(true);
       console.log("Done!");
-      return leagueId;
+      return leagueId + 1;
     }
   } catch (error) {
     console.error(error);

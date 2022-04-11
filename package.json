@@ -1,11 +1,12 @@
 {
-  "name": "vue3Test",
+  "name": "vue3test",
   "version": "0.0.0",
   "scripts": {
     "build": "vite build",
     "lint": "vue-cli-service lint",
     "dev": "vite",
-    "test": "vitest"
+    "test": "vitest",
+    "e2e": "cypress open"
   },
   "dependencies": {
     "@vueuse/rxjs": "^8.2.1",
@@ -27,6 +28,7 @@
     "@vue/cli-plugin-typescript": "^4.5.12",
     "@vue/compiler-sfc": "^3.0.7",
     "@vue/eslint-config-typescript": "^9.1.0",
+    "cypress": "^9.5.3",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
