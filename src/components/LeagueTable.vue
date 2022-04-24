@@ -23,6 +23,7 @@
           <button
             class="button is-danger"
             @click="openModal(league.leagueId, league.name)"
+            :data-test="`delete-button-${league.leagueId}`"
           >
             Delete
           </button>

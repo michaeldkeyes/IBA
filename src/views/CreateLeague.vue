@@ -3,7 +3,11 @@
     Welcome to the International Basketball Association
   </h1>
   <div class="is-flex is-justify-content-center mt-6 mb-5">
-    <button class="is-size-2 button is-primary" @click="generate()">
+    <button
+      class="is-size-2 button is-primary"
+      @click="generate()"
+      data-test="new-league-button"
+    >
       New League
     </button>
   </div>

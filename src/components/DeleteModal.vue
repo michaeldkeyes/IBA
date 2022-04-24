@@ -8,7 +8,11 @@
         this league.
       </section>
       <footer class="modal-card-foot">
-        <button class="button is-primary" @click="deleteLeague">
+        <button
+          class="button is-primary"
+          @click="deleteLeague"
+          data-test="confirm-delete-button"
+        >
           Delete League
         </button>
         <button class="button" @click="$emit('handleModal')">Cancel</button>

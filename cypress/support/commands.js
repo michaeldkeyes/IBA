@@ -11,6 +11,15 @@
 //
 // -- This is a parent command --
 // Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add("createLeague", () => {
+  cy.get("[data-test='new-league-button']")
+    .should("contain", "New League")
+    .click();
+});
+
+Cypress.Commands.add("goToLeaguePage", () => {
+  cy.get(".navbar").find(".navbar-brand").click();
+});
 //
 //
 // -- This is a child command --
